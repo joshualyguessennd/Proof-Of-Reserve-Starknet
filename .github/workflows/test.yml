@@ -6,6 +6,8 @@ on:
       - main
   pull_request:
 
+env:
+
 jobs:
   test:
     runs-on: ubuntu-latest
