@@ -55,9 +55,18 @@ func add_publisher{
 @l1_handler
 func set_data{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}(from_address: felt, entry: OracleEntry) {
+}(from_address: felt, asset_sym_little: felt,
+    asset_name_little: felt,
+    address_owner_little: felt,
+    balance_little: felt,
+    r_low: felt,
+    r_high: felt,
+    s_low: felt,
+    s_high: felt,
+    v: felt,
+    public_key: felt) {
     alloc_locals;
-    let proposed_public_key = entry.public_key;
+    let proposed_public_key = public_key;
     let (state) = authorized_publisher.read(public_key=proposed_public_key);
     with_attr error_message("Address has no right to sign the message") {
         assert state = TRUE;
@@ -65,16 +74,16 @@ func set_data{
 
     with_attr error_message("Signature verification failed") {
         verify_oracle_message(
-            entry.asset_sym_little,
-            entry.asset_name_little,
-            entry.address_owner_little,
-            entry.balance_little,
-            entry.r_low,
-            entry.r_high,
-            entry.s_low,
-            entry.s_high,
-            entry.v,
-            entry.public_key,
+           asset_sym_little,
+            asset_name_little,
+            address_owner_little,
+       balance_little,
+            r_low,
+            r_high,
+            s_low,
+            s_high,
+            v,
+            public_key,
         );
     }
     return ();
