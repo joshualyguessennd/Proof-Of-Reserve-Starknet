@@ -8,5 +8,5 @@ starknet-artifacts
 #Hardhat files
 cache
 artifacts
-.venv
+.venv/
 
