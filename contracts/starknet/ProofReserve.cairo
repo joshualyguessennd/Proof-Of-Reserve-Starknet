@@ -6,7 +6,7 @@ from starkware.starknet.common.syscalls import get_caller_address
 from starkware.cairo.common.math import assert_not_equal
 from starkware.cairo.common.bool import TRUE, FALSE
 
-from starknet.library import verify_oracle_message, word_reverse_endian_64, OracleEntry, Entry
+from starknet.Library import verify_oracle_message, word_reverse_endian_64, OracleEntry, Entry
 
 @storage_var
 func contract_admin() -> (res : felt):
