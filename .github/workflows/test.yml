@@ -31,8 +31,8 @@ jobs:
         run: |
           python -m venv .venv
           source .venv/bin/activate
-          pip install cairo-lang==0.9.0
-          pip install starknet-devnet==0.2.5
+          pip install cairo-lang
+          pip install starknet-devnet
           yarn
       
       - name: Compile Cairo
