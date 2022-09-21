@@ -2,9 +2,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@shardlabs/starknet-hardhat-plugin";
 import "@nomicfoundation/hardhat-toolbox";
 
-
 const { HOSTNAME_L1, HOSTNAME_L2 } = process.env;
-
 
 const config: HardhatUserConfig = {
   networks: {
@@ -36,8 +34,8 @@ const config: HardhatUserConfig = {
             runs: 800,
           },
         },
-      }
-    ]
+      },
+    ],
   },
   starknet: {
     // dockerizedVersion: "0.9.1", // alternatively choose one of the two venv options below
@@ -51,13 +49,12 @@ const config: HardhatUserConfig = {
     wallets: {
       OpenZeppelin: {
         accountName: "OpenZeppelin",
-        modulePath: "starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount",
-        accountPath: "~/.starknet_accounts"
-      }
-    }
+        modulePath:
+          "starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount",
+        accountPath: "~/.starknet_accounts",
+      },
+    },
   },
-
-
 
   paths: {
     artifacts: "./artifacts",
@@ -66,8 +63,7 @@ const config: HardhatUserConfig = {
     tests: "./test",
     starknetSources: "./contracts",
     starknetArtifacts: "./starknet-artifacts",
-  }
+  },
 };
-
 
 export default config;

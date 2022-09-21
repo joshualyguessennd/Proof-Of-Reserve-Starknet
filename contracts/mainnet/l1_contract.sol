@@ -1,7 +1,59 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.15;
 
-interface StarkNetLike {
+interface IStarknetMessagingEvents {
+    // This event needs to be compatible with the one defined in Output.sol.
+    event LogMessageToL1(
+        uint256 indexed fromAddress,
+        address indexed toAddress,
+        uint256[] payload
+    );
+
+    // An event that is raised when a message is sent from L1 to L2.
+    event LogMessageToL2(
+        address indexed fromAddress,
+        uint256 indexed toAddress,
+        uint256 indexed selector,
+        uint256[] payload,
+        uint256 nonce
+    );
+
+    // An event that is raised when a message from L2 to L1 is consumed.
+    event ConsumedMessageToL1(
+        uint256 indexed fromAddress,
+        address indexed toAddress,
+        uint256[] payload
+    );
+
+    // An event that is raised when a message from L1 to L2 is consumed.
+    event ConsumedMessageToL2(
+        address indexed fromAddress,
+        uint256 indexed toAddress,
+        uint256 indexed selector,
+        uint256[] payload,
+        uint256 nonce
+    );
+
+    // An event that is raised when a message from L1 to L2 Cancellation is started.
+    event MessageToL2CancellationStarted(
+        address indexed fromAddress,
+        uint256 indexed toAddress,
+        uint256 indexed selector,
+        uint256[] payload,
+        uint256 nonce
+    );
+
+    // An event that is raised when a message from L1 to L2 is canceled.
+    event MessageToL2Canceled(
+        address indexed fromAddress,
+        uint256 indexed toAddress,
+        uint256 indexed selector,
+        uint256[] payload,
+        uint256 nonce
+    );
+}
+
+interface IStarknetMessaging is IStarknetMessagingEvents {
     function sendMessageToL2(
         uint256 to,
         uint256 selector,
@@ -55,31 +107,21 @@ contract L1_CONTRACT {
     function publishFromL1() public {
         uint256[] memory payload = new uint256[](11);
         payload[0] = uint256(uint160(address(this)));
-        payload[1] = 10703902247957299200;
+        payload[1] = 10703902247957200;
         payload[2] = 4627187504670310400;
         payload[3] = 216172782113783808;
         payload[4] = 4412482;
-        payload[5] = 332795217045463323013001404630688413274;
-        payload[6] = 146142335783970907433265090013769735112;
-        payload[7] = 303370686640270218425857983888853860003;
-        payload[8] = 64365439344860771410702511821974968;
+        payload[5] = 3327952170454633230;
+        payload[6] = 1461423357839709074;
+        payload[7] = 303370686640270218;
+        payload[8] = 643654393448607714;
         payload[9] = 0;
-        payload[10] = 761466874539515783303110363281120649054760260892;
+        payload[10] = 76146687453951578330;
 
-        StarkNetLike(starkNet).sendMessageToL2(
+        IStarknetMessaging(starkNet).sendMessageToL2(
             l2Contract,
             PUBLISH_SELECTOR,
             payload
         );
-    }
-
-    function toSplitUint(uint256 value)
-        internal
-        pure
-        returns (uint256, uint256)
-    {
-        uint256 low = value & ((1 << 128) - 1);
-        uint256 high = value >> 128;
-        return (low, high);
     }
 }
