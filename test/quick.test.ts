@@ -42,7 +42,8 @@ describe("L1Contract", function () {
   });
 
   it("publish_data", async () => {
-    const tx = await l1Contract.connect(admin).publishFromL1();
+    // it should revert invalid data
+    const tx = await l1Contract.connect(admin).publishFromL1(10703902247957299200n, 4627187504670310400n, admin.address, 4412482, 332795217045, 3033706866402);
     const receipt = await tx.wait();
 
     const loggedEvent = receipt.events.filter(

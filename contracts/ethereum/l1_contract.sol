@@ -104,24 +104,50 @@ contract L1_CONTRACT {
         l2Contract = _l2Contract;
     }
 
-    function publishFromL1() public {
+    /**
+     *@dev publish data to layer 2
+     *@param symbol, symbol of asset (exple DAI, WETH)
+     *@param name, name of asset(Ether etc)
+     *@param owner, address of account who owns the asset
+     *@param balance, balance of asset
+     *@param r,
+     *@param s,
+     */
+
+    function publishFromL1(
+        uint256 symbol,
+        uint256 name,
+        address owner,
+        uint256 balance,
+        uint256 r,
+        uint256 s
+    ) public {
         uint256[] memory payload = new uint256[](11);
         payload[0] = uint256(uint160(address(this)));
-        payload[1] = 10703902247957200;
-        payload[2] = 4627187504670310400;
-        payload[3] = 216172782113783808;
-        payload[4] = 4412482;
-        payload[5] = 3327952170454633230;
-        payload[6] = 1461423357839709074;
-        payload[7] = 303370686640270218;
-        payload[8] = 643654393448607714;
-        payload[9] = 0;
-        payload[10] = 76146687453951578330;
+        payload[1] = symbol;
+        payload[2] = name;
+        payload[3] = uint256(uint160(owner));
+        payload[4] = balance;
+        (payload[5], payload[6]) = toSplitUint(r);
+        (payload[7], payload[8]) = toSplitUint(s);
+        payload[9] = 0; //v
+        payload[10] = uint256(uint160(address(this)));
 
         IStarknetMessaging(starkNet).sendMessageToL2(
             l2Contract,
             PUBLISH_SELECTOR,
             payload
         );
+    }
+
+    // split uint to low and high part
+    function toSplitUint(uint256 value)
+        internal
+        pure
+        returns (uint256, uint256)
+    {
+        uint256 low = value & ((1 << 128) - 1);
+        uint256 high = value >> 128;
+        return (low, high);
     }
 }
