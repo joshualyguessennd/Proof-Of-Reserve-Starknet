@@ -9,4 +9,5 @@ starknet-artifacts
 cache
 artifacts
 .venv/
+package-lock.json
 
