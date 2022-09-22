@@ -62,22 +62,32 @@ entity send data containing ```asset symbol```, ```asset name```, ```address```,
 **Install Node 16**
 
 
-```nvm install 16```
-```nvm use 16```
+```
+nvm install 16
+nvm use 16
+```
 
 **Install**
-```python -m venv .venv```
-```source .venv/bin/activate```
-```pip install cairo-lang```
-```pip install starknet-devnet```
-```yarn```
+```
+python -m venv .venv
+source .venv/bin/activate
+pip install cairo-lang
+pip install starknet-devnet
+yarn
+```
 
 **run tests**
 first run both networks for ethereum and starknet
-```yarn testnet:l1```
-```yarn testnet:l2```
+```
+yarn testnet:l1
+yarn testnet:l2
+```
 compile code
-```yarn compile:l1```
-```yarn compile:l2```
+```
+yarn compile:l1
+yarn compile:l2
+```
 run test
-```yarn test```
+```
+yarn test
+```
