@@ -77,26 +77,16 @@ interface IStarknetMessaging is IStarknetMessagingEvents {
         uint256[] calldata payload,
         uint256 nonce
     ) external;
+
+    function messageCancellationDelay() external view returns (uint256);
+
+    function l1ToL2MessageNonce() external view returns (uint256);
 }
 
-interface IERC20 {
-    function approve(address spender, uint256 amount) external;
-
-    function transferFrom(
-        address from,
-        address to,
-        uint256 value
-    ) external;
-
-    function balanceOf(address account) external view returns (uint256);
-}
-
-contract L1_CONTRACT {
+contract Setter {
     address public starkNet;
     uint256 public l2Contract;
-
-    // selector
-    uint256 constant PUBLISH_SELECTOR =
+    uint256 PUBLISH_SELECTOR =
         1140936987664331448615618258224699152095025896606603785909108379971040460607;
 
     constructor(uint256 _l2Contract, address _starknet) {
@@ -104,24 +94,20 @@ contract L1_CONTRACT {
         l2Contract = _l2Contract;
     }
 
-    function publishFromL1() public {
-        uint256[] memory payload = new uint256[](11);
-        payload[0] = uint256(uint160(address(this)));
-        payload[1] = 10703902247957200;
-        payload[2] = 4627187504670310400;
-        payload[3] = 216172782113783808;
-        payload[4] = 4412482;
-        payload[5] = 3327952170454633230;
-        payload[6] = 1461423357839709074;
-        payload[7] = 303370686640270218;
-        payload[8] = 643654393448607714;
-        payload[9] = 0;
-        payload[10] = 76146687453951578330;
+    function getCancellationDelay() external view returns (uint256) {
+        return IStarknetMessaging(starkNet).messageCancellationDelay();
+    }
+
+    function set(address from, uint256 _x) public {
+        uint256[] memory payload = new uint256[](2);
+        payload[0] = uint256(uint160(from));
+        payload[1] = _x;
 
         IStarknetMessaging(starkNet).sendMessageToL2(
             l2Contract,
             PUBLISH_SELECTOR,
             payload
         );
+        // return data;
     }
 }
