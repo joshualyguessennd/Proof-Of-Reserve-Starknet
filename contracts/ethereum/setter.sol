@@ -98,9 +98,9 @@ contract Setter {
         return IStarknetMessaging(starkNet).messageCancellationDelay();
     }
 
-    function set(address from, uint256 _x) public {
+    function set(address sender, uint256 _x) public {
         uint256[] memory payload = new uint256[](2);
-        payload[0] = uint256(uint160(from));
+        payload[0] = uint256(uint160(sender));
         payload[1] = _x;
 
         IStarknetMessaging(starkNet).sendMessageToL2(

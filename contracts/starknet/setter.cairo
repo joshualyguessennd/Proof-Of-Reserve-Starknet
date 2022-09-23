@@ -16,7 +16,7 @@ func set_l1{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(l1_
 }
 
 @l1_handler
-func set_data{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(from_address: felt, _x: felt){
+func set_data{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(from_address: felt, sender: felt, _x: felt){
     alloc_locals;
     let (l1) = L1_ADDRESS.read();
     assert from_address = l1;

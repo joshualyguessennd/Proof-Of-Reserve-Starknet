@@ -20,8 +20,8 @@ describe("Setter", function () {
         const { l1Contract, l2Contract, admin } = await setupTest();
         console.log("l2 contract is: ", l2Contract.address);
         console.log("l1 contract is:", l1Contract.address);
-        const tx_test = await l1Contract.getCancellationDelay();
-        // const tx = await l1Contract.connect(admin).set(admin.address, 2);
+        // const tx_test = await l1Contract.getCancellationDelay();
+        const tx = await l1Contract.connect(admin).set(admin.address, 2);
         // const flushL1Response = await starknet.devnet.flush();
         // const receipt = await tx.wait();
 
