@@ -7,8 +7,8 @@
   },
   "scripts": {
     "test": "hardhat test --network l1_testnet",
-    "testnet:l1": "yarn ganache --fork  --gasPrice 2000000000000",
-    "testnet:l2": ".venv/bin/starknet-devnet --host 0.0.0.0 --lite-mode",
+    "testnet:l1": "yarn ganache --gasPrice 2000000000000",
+    "testnet:l2": "starknet-devnet --host 0.0.0.0 --lite-mode",
     "compile:l1": "hardhat compile",
     "compile:l2": "hardhat starknet-compile"
   },
