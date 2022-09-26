@@ -91,3 +91,11 @@ run test
 ```
 yarn test
 ```
+
+# Environnment (with Docker)
+
+```
+docker compose up --build
+docker exec -ti $(docker ps -f name=playground -q) bash
+yarn test
+```
