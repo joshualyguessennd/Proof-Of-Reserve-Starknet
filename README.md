@@ -43,13 +43,14 @@ while Chainlink seems to offer a more decentralized solution, it is not present 
 Implementing a decentralized solution implies having secure data. from the ethereum network it must be possible to sign messages according to ethereum standards ```b'\x19Ethereum Signed Message:\n32'``` and decode it from starknet side .
 
 
+![untitled](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Faffd96f6-155a-439c-bae3-d1c2d0124e1f%2FScreen_Shot_2022-09-26_at_21.51.58.png?table=block&id=d9e2adba-87d2-40a1-87f6-1307b08a68a3&spaceId=703c9ac7-6b4a-4c85-a4d6-c178cba99965&width=2000&userId=dd8e8ef1-9abd-4bd5-a553-060b5655d4f9&cache=v2)
 
 ```
 1- Trusted Entity sign message containing address, balance , asset to the Ethereum smart contract
 2- A chainlink keeper attached to the ethereum main smart contract emit at a defined period of time the order to send transaction to the starknet side .
 3- The datas are batched and sent to the starknet via the messaging contract L1->L2
 4- The signatures are verified by the starnet smart contracts and merkle root is updated. 
-5- User can verify an address held the amount that proclaims
+5- User can verify if an address held the amount that proclaims
 ```
 
 ## Get started
