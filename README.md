@@ -38,7 +38,7 @@ while Chainlink seems to offer a more decentralized solution, it is not present 
 - Where will we select the data to feed the oracle ?
 
 
-# *** Process ***
+# ***Process***
 
 Implementing a decentralized solution implies having secure data. from the ethereum network it must be possible to sign messages according to ethereum standards ```b'\x19Ethereum Signed Message:\n32'``` and decode it from starknet side .
 
