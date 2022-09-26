@@ -1,0 +1,47 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+          cache-dependency-path: 'yarn.lock'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+        
+      - name: Install Dependencies  
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install cairo-lang
+          pip install starknet-devnet
+          yarn
+      
+      - name: Compile Cairo
+        run: |
+          yarn compile:l1
+          yarn compile:l2
+      
+      - name: Run tests
+        run: |
+          yarn testnet:l2 &
+          yarn testnet:l1 &
+          yarn test
