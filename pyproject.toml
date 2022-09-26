@@ -5,7 +5,7 @@ description = ""
 authors = ["Josue Guessennd <josue@nethermind.io>"]
 
 [tool.poetry.dependencies]
-python = "3.9.0"
+python = "3.9.14"
 cairo-lang = "0.10.0"
 starknet-devnet = "^0.3.1"
 
