@@ -37,18 +37,18 @@ while Chainlink seems to offer a more decentralized solution, it is not present 
 - How decentralized are the oracles solution present on starknet ?
 - Where will we select the data to feed the oracle ?
 
-# ****Purpose of this repository****
 
-One of the main issue when we come to data source, One of the problems that arises when it comes to using data published by a third party is the robustness and legitimacy of the information. Was the messenger and the message sent by a trusted third party?
+# *** Process ***
 
-This repository deals with the legitimacy of sources, how an authority allocated to publish information is verified following the sending of information whether from layer 1 or starknet
-
-The function ```set_data``` and ```set_data_l2``` permit to publish data that deals with balance of an account concerning a specific assets . the message is signed following the Ethereum Signed message standard ```b'\x19Ethereum Signed Message:\n32'``` 
-
-entity send data containing ```asset symbol```, ```asset name```, ```address```, and ```balance``` with signature , ```r```, ```s```, ```v```. If signature doesn't match , the transaction failed 
+Implementing a decentralized solution implies having secure data. from the ethereum network it must be possible to sign messages according to ethereum standards ```b'\x19Ethereum Signed Message:\n32'``` and decode it from starknet side .
 
 
-![](../../../../Downloads/IMG_0060.jpg)
+
+1- Trusted Entity sign message containing address, balance , asset to the Ethereum smart contract
+2- A chainlink keeper attached to the ethereum main smart contract emit at a defined period of time the order to send transaction to the starknet side .
+3- The datas are batched and sent to the starknet via the messaging contract L1->L2
+4- The signatures are verified by the starnet smart contracts and merkle root is updated. 
+5- User can verify an address held the amount that proclaims
 
 
 ## Get started

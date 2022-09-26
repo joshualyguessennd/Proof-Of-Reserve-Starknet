@@ -1,4 +1,4 @@
-FROM python:3.9.0
+FROM python:3.9.14
 
 ENV HOSTNAME_L1 testnet-l1
 ENV HOSTNAME_L2 testnet-l2
@@ -31,4 +31,5 @@ RUN yarn
 RUN yarn compile:l2
 
 # Run tests
-CMD ["yarn", "testnet:l1", "&&", "yarn", "testnet:l2", "&&", "sleep", "999"]
+# CMD [ "yarn", "testnet:l1" ]
+# CMD ["yarn", "testnet:l1", "&&", "yarn", "testnet:l2", "&&", "sleep", "999"]

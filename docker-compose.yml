@@ -1,6 +1,9 @@
-version: "3.9"
+version: "3.9.14"
 services:
   playground:
     build:
       context: .
     container_name: playground
+    ports:
+      - "8545:8545"
+      - "5050:5050"
