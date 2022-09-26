@@ -44,12 +44,13 @@ Implementing a decentralized solution implies having secure data. from the ether
 
 
 
+```
 1- Trusted Entity sign message containing address, balance , asset to the Ethereum smart contract
 2- A chainlink keeper attached to the ethereum main smart contract emit at a defined period of time the order to send transaction to the starknet side .
 3- The datas are batched and sent to the starknet via the messaging contract L1->L2
 4- The signatures are verified by the starnet smart contracts and merkle root is updated. 
 5- User can verify an address held the amount that proclaims
-
+```
 
 ## Get started
 
