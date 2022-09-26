@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  playground:
+    build:
+      context: .
+    container_name: playground
