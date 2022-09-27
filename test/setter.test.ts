@@ -30,10 +30,10 @@ describe("Setter", function () {
         // );
 
         // const flushL1Response = await starknet.devnet.flush();
-        // await starknet.devnet.flush();
+        await starknet.devnet.flush();
         // console.log(tx);
-        // const data = await l2Contract.call("read_x", {})
-        // console.log(data)
+        const data = await l2Contract.call("read_x", {})
+        console.log(data)
 
         // const flushL1Messages = flushL1Response.consumed_messages.from_l1;
         // expect(flushL1Response.consumed_messages.from_l2).to.be.empty;
