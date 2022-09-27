@@ -95,15 +95,46 @@ interface IERC20 {
 
 contract L1_CONTRACT {
     address public starkNet;
+    address public owner;
+    address public keeper;
     uint256 public l2Contract;
+    uint256 public countPublishers;
 
     // selector
     uint256 constant PUBLISH_SELECTOR =
         1140936987664331448615618258224699152095025896606603785909108379971040460607;
 
+    struct DataInfo {
+        address sender;
+        uint256[] payload;
+    }
+
+    DataInfo[] public datas;
+    address[] public publishers;
+
+    mapping(address => DataInfo) public data;
+    mapping(address => bool) public isAllowed;
+    mapping(uint256 => address) public addressId;
+
+    error NotOwner();
+    error NotKeeper();
+    error IsNotPublisher();
+    event NewPublisher(address publisher);
+    event MessageSentToLayer2();
+
     constructor(uint256 _l2Contract, address _starknet) {
         starkNet = _starknet;
         l2Contract = _l2Contract;
+        owner = msg.sender;
+    }
+
+    function addNewPublisher(address _publisher) external onlyOwner {
+        isAllowed[_publisher] = true;
+        addressId[countPublishers] = _publisher;
+        unchecked {
+            countPublishers++;
+        }
+        emit NewPublisher(_publisher);
     }
 
     /**
@@ -121,6 +152,9 @@ contract L1_CONTRACT {
         bytes32 s,
         uint8 v
     ) public {
+        if (isAllowed[msg.sender] != true) {
+            revert IsNotPublisher();
+        }
         uint256[] memory payload = new uint256[](10);
         uint256 sym = uint256(asset_symbol);
         uint256 asset = uint256(asset_name);
@@ -137,14 +171,30 @@ contract L1_CONTRACT {
         // v
         payload[8] = v;
         payload[9] = uint256(uint160(address(msg.sender)));
-
-        IStarknetMessaging(starkNet).sendMessageToL2(
-            l2Contract,
-            PUBLISH_SELECTOR,
-            payload
-        );
+        // store the data for the next round
+        data[msg.sender] = DataInfo(msg.sender, payload);
     }
 
+    /**
+     *@dev this function sends the current data to the layer 2 and is called only by the keeper
+     */
+    function sendBatchTransaction() external onlyKeeper {
+        uint256 i;
+        for (i; i < countPublishers; i++) {
+            address _publisher = addressId[i];
+            uint256[] memory _payload = data[_publisher].payload;
+            IStarknetMessaging(starkNet).sendMessageToL2(
+                l2Contract,
+                PUBLISH_SELECTOR,
+                _payload
+            );
+        }
+        emit MessageSentToLayer2();
+    }
+
+    /**
+     *@notice split uint
+     */
     function toSplitUint(uint256 value)
         internal
         pure
@@ -153,5 +203,19 @@ contract L1_CONTRACT {
         uint256 low = value & ((1 << 128) - 1);
         uint256 high = value >> 128;
         return (low, high);
+    }
+
+    modifier onlyOwner() {
+        if (msg.sender != owner) {
+            revert NotOwner();
+        }
+        _;
+    }
+
+    modifier onlyKeeper() {
+        if (msg.sender != keeper) {
+            revert NotKeeper();
+        }
+        _;
     }
 }
