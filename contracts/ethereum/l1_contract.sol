@@ -106,6 +106,12 @@ contract L1_CONTRACT {
         l2Contract = _l2Contract;
     }
 
+    /**
+     *@param asset_symbol symbol of asset
+     *@param asset_name name of the asset
+     *@param _account address that owns the asset
+     *@param account_balance amount of asset address owns
+     */
     function publishData(
         int256 asset_symbol,
         int256 asset_name,
