@@ -106,23 +106,46 @@ contract L1_CONTRACT {
         l2Contract = _l2Contract;
     }
 
-    function publishFromL1() public {
+    function publishData(
+        int256 asset_symbol,
+        int256 asset_name,
+        address _account,
+        uint256 account_balance,
+        bytes32 r,
+        bytes32 s,
+        uint8 v
+    ) public {
         uint256[] memory payload = new uint256[](10);
-        payload[0] = 10703902247957200;
-        payload[1] = 4627187504670310400;
-        payload[2] = 216172782113783808;
-        payload[3] = 4412482;
-        payload[4] = 3327952170454633230;
-        payload[5] = 1461423357839709074;
-        payload[6] = 303370686640270218;
-        payload[7] = 643654393448607714;
-        payload[8] = 0;
-        payload[9] = 76146687453951578330;
+        uint256 sym = uint256(asset_symbol);
+        uint256 asset = uint256(asset_name);
+        uint256 address_account = uint256(uint160(_account));
+        uint256 _r = uint256(r);
+        uint256 _s = uint256(s);
+        // send payload
+        payload[0] = sym;
+        payload[1] = asset;
+        payload[2] = address_account;
+        payload[3] = account_balance;
+        (payload[4], payload[5]) = toSplitUint(_r);
+        (payload[6], payload[7]) = toSplitUint(_s);
+        // v
+        payload[8] = v;
+        payload[9] = uint256(uint160(address(msg.sender)));
 
         IStarknetMessaging(starkNet).sendMessageToL2(
             l2Contract,
             PUBLISH_SELECTOR,
             payload
         );
+    }
+
+    function toSplitUint(uint256 value)
+        internal
+        pure
+        returns (uint256, uint256)
+    {
+        uint256 low = value & ((1 << 128) - 1);
+        uint256 high = value >> 128;
+        return (low, high);
     }
 }
