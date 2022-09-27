@@ -2,10 +2,10 @@
 name = "proofreserve-starknet"
 version = "0.1.0"
 description = ""
-authors = ["Josue Guessennd <josue@nethermind.io>"]
+authors = ["Josue"]
 
 [tool.poetry.dependencies]
-python = "3.9.14"
+python = "3.9.12"
 cairo-lang = "0.10.0"
 starknet-devnet = "^0.3.1"
 

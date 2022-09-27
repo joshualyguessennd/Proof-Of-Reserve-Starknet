@@ -107,18 +107,17 @@ contract L1_CONTRACT {
     }
 
     function publishFromL1() public {
-        uint256[] memory payload = new uint256[](11);
-        payload[0] = uint256(uint160(address(this)));
-        payload[1] = 10703902247957200;
-        payload[2] = 4627187504670310400;
-        payload[3] = 216172782113783808;
-        payload[4] = 4412482;
-        payload[5] = 3327952170454633230;
-        payload[6] = 1461423357839709074;
-        payload[7] = 303370686640270218;
-        payload[8] = 643654393448607714;
-        payload[9] = 0;
-        payload[10] = 76146687453951578330;
+        uint256[] memory payload = new uint256[](10);
+        payload[0] = 10703902247957200;
+        payload[1] = 4627187504670310400;
+        payload[2] = 216172782113783808;
+        payload[3] = 4412482;
+        payload[4] = 3327952170454633230;
+        payload[5] = 1461423357839709074;
+        payload[6] = 303370686640270218;
+        payload[7] = 643654393448607714;
+        payload[8] = 0;
+        payload[9] = 76146687453951578330;
 
         IStarknetMessaging(starkNet).sendMessageToL2(
             l2Contract,
