@@ -13,6 +13,11 @@ func contract_admin() -> (res: felt) {
 }
 
 @storage_var
+func root() -> (res: felt) {
+}
+
+
+@storage_var
 func authorized_publisher(public_key: felt) -> (state: felt) {
 }
 @contract_interface
@@ -53,7 +58,7 @@ func add_publisher{
 }
 
 @l1_handler
-func set_data{
+func post_data{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
 }(from_address: felt, asset_sym_little: felt,
     asset_name_little: felt,
@@ -68,10 +73,11 @@ func set_data{
     alloc_locals;
     let proposed_public_key = public_key;
     let (state) = authorized_publisher.read(public_key=proposed_public_key);
+    // verify if the post has the right to post data
     with_attr error_message("Address has no right to sign the message") {
         assert state = TRUE;
     }
-
+    // verify the signature of the sources
     with_attr error_message("Signature verification failed") {
         verify_oracle_message(
            asset_sym_little,
@@ -86,11 +92,12 @@ func set_data{
             public_key,
         );
     }
+    //todo update the root, (format, address/balance)
     return ();
 }
 
 @external
-func set_data_l2{
+func post_data_l2{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
 }(entry: OracleEntry) {
     alloc_locals;
@@ -114,5 +121,13 @@ func set_data_l2{
             entry.public_key,
         );
     }
+    return ();
+}
+
+// user call this function to verify if a address had this balance
+@external
+func verifyBalance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+   address: felt, balance
+){
     return ();
 }

@@ -13,8 +13,7 @@ contract L1_CONTRACT {
     uint256 public countPublishers;
 
     // selector
-    uint256 constant PUBLISH_SELECTOR =
-        1140936987664331448615618258224699152095025896606603785909108379971040460607;
+    uint256 public SELECTOR;
 
     // data type to store the information to send for the round
     struct DataInfo {
@@ -30,10 +29,15 @@ contract L1_CONTRACT {
     event NewPublisher(address publisher);
     event MessageSentToLayer2();
 
-    constructor(uint256 _l2Contract, address _starknet) {
+    constructor(
+        address _starknet,
+        uint256 _l2Contract,
+        uint256 _SELECTOR
+    ) {
         starkNet = _starknet;
         l2Contract = _l2Contract;
         owner = msg.sender;
+        SELECTOR = _SELECTOR;
     }
 
     /**
@@ -98,7 +102,7 @@ contract L1_CONTRACT {
             // if a message is corrupted or false the transaction will failed at the starknet level
             IStarknetMessaging(starkNet).sendMessageToL2(
                 l2Contract,
-                PUBLISH_SELECTOR,
+                SELECTOR,
                 _payload
             );
         }
