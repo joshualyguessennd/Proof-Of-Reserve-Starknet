@@ -5,6 +5,7 @@ from starkware.cairo.common.pow import pow
 from starkware.starknet.common.syscalls import get_caller_address
 from starkware.cairo.common.math import assert_not_equal
 from starkware.cairo.common.bool import TRUE, FALSE
+from starkware.cairo.common.hash import hash2
 
 from starknet.Library import verify_oracle_message, word_reverse_endian_64, OracleEntry, Entry
 
@@ -14,6 +15,13 @@ func contract_admin() -> (res: felt) {
 
 @storage_var
 func root() -> (res: felt) {
+}
+
+// data type to store account and balance
+// we'll hash the balance store and create a root
+struct DataInfo {
+    public_key: felt,
+    balance: felt,
 }
 
 
@@ -83,7 +91,7 @@ func post_data{
            asset_sym_little,
             asset_name_little,
             address_owner_little,
-       balance_little,
+            balance_little,
             r_low,
             r_high,
             s_low,
@@ -130,4 +138,11 @@ func verifyBalance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
    address: felt, balance
 ){
     return ();
+}
+
+//hash data and update a root
+func update_root_hash{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(data: DataInfo*) -> (res: felt){
+    let res = data.public_key;
+    let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.balance);
+    return(res=res);
 }
