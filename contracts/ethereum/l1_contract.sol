@@ -2,6 +2,7 @@
 pragma solidity >=0.8.15;
 
 import "./interfaces/Interface.sol";
+import "./errors.sol";
 
 contract L1_CONTRACT {
     address public starkNet;
@@ -25,10 +26,6 @@ contract L1_CONTRACT {
     mapping(address => DataInfo) public data;
     mapping(address => bool) public isAllowed;
     mapping(uint256 => address) public addressId;
-
-    error NotOwner();
-    error NotKeeper();
-    error IsNotPublisher();
 
     event NewPublisher(address publisher);
     event MessageSentToLayer2();
