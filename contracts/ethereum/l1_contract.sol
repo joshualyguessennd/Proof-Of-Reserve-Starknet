@@ -94,8 +94,7 @@ contract L1_CONTRACT {
      *@dev this function sends the current data to the layer 2 and is called only by the keeper
      */
     function sendBatchTransaction() external onlyKeeper {
-        uint256 i;
-        for (i; i < countPublishers; i++) {
+        for (uint256 i; i < countPublishers; i++) {
             address _publisher = addressId[i];
             uint256[] memory _payload = data[_publisher].payload;
             // send the data collected by all the publishers, the starknet contract will verify the signature
