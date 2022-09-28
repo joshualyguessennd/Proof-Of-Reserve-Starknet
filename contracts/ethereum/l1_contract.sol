@@ -1,102 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.15;
 
-interface IStarknetMessagingEvents {
-    // This event needs to be compatible with the one defined in Output.sol.
-    event LogMessageToL1(
-        uint256 indexed fromAddress,
-        address indexed toAddress,
-        uint256[] payload
-    );
-
-    // An event that is raised when a message is sent from L1 to L2.
-    event LogMessageToL2(
-        address indexed fromAddress,
-        uint256 indexed toAddress,
-        uint256 indexed selector,
-        uint256[] payload,
-        uint256 nonce
-    );
-
-    // An event that is raised when a message from L2 to L1 is consumed.
-    event ConsumedMessageToL1(
-        uint256 indexed fromAddress,
-        address indexed toAddress,
-        uint256[] payload
-    );
-
-    // An event that is raised when a message from L1 to L2 is consumed.
-    event ConsumedMessageToL2(
-        address indexed fromAddress,
-        uint256 indexed toAddress,
-        uint256 indexed selector,
-        uint256[] payload,
-        uint256 nonce
-    );
-
-    // An event that is raised when a message from L1 to L2 Cancellation is started.
-    event MessageToL2CancellationStarted(
-        address indexed fromAddress,
-        uint256 indexed toAddress,
-        uint256 indexed selector,
-        uint256[] payload,
-        uint256 nonce
-    );
-
-    // An event that is raised when a message from L1 to L2 is canceled.
-    event MessageToL2Canceled(
-        address indexed fromAddress,
-        uint256 indexed toAddress,
-        uint256 indexed selector,
-        uint256[] payload,
-        uint256 nonce
-    );
-}
-
-interface IStarknetMessaging is IStarknetMessagingEvents {
-    function sendMessageToL2(
-        uint256 to,
-        uint256 selector,
-        uint256[] calldata payload
-    ) external returns (bytes32);
-
-    function consumeMessageFromL2(uint256 from, uint256[] calldata payload)
-        external
-        returns (bytes32);
-
-    function startL1ToL2MessageCancellation(
-        uint256 toAddress,
-        uint256 selector,
-        uint256[] calldata payload,
-        uint256 nonce
-    ) external;
-
-    function messageCancellationDelay() external returns (uint256);
-
-    function cancelL1ToL2Message(
-        uint256 toAddress,
-        uint256 selector,
-        uint256[] calldata payload,
-        uint256 nonce
-    ) external;
-}
-
-interface IERC20 {
-    function approve(address spender, uint256 amount) external;
-
-    function transferFrom(
-        address from,
-        address to,
-        uint256 value
-    ) external;
-
-    function balanceOf(address account) external view returns (uint256);
-}
+import "./interfaces/Interface.sol";
 
 contract L1_CONTRACT {
     address public starkNet;
     address public owner;
     address public keeper;
+    address[] public publishers;
     uint256 public l2Contract;
     uint256 public countPublishers;
 
@@ -104,14 +15,13 @@ contract L1_CONTRACT {
     uint256 constant PUBLISH_SELECTOR =
         1140936987664331448615618258224699152095025896606603785909108379971040460607;
 
+    // data type to store the information to send for the round
     struct DataInfo {
         address sender;
         uint256[] payload;
     }
 
-    DataInfo[] public datas;
-    address[] public publishers;
-
+    // each publisher has a data which is updated continuously
     mapping(address => DataInfo) public data;
     mapping(address => bool) public isAllowed;
     mapping(uint256 => address) public addressId;
@@ -119,6 +29,7 @@ contract L1_CONTRACT {
     error NotOwner();
     error NotKeeper();
     error IsNotPublisher();
+
     event NewPublisher(address publisher);
     event MessageSentToLayer2();
 
@@ -128,6 +39,10 @@ contract L1_CONTRACT {
         owner = msg.sender;
     }
 
+    /**
+    @dev add a new publisher address
+    @param _publisher new address allows to post data 
+    */
     function addNewPublisher(address _publisher) external onlyOwner {
         isAllowed[_publisher] = true;
         addressId[countPublishers] = _publisher;
@@ -183,6 +98,8 @@ contract L1_CONTRACT {
         for (i; i < countPublishers; i++) {
             address _publisher = addressId[i];
             uint256[] memory _payload = data[_publisher].payload;
+            // send the data collected by all the publishers, the starknet contract will verify the signature
+            // if a message is corrupted or false the transaction will failed at the starknet level
             IStarknetMessaging(starkNet).sendMessageToL2(
                 l2Contract,
                 PUBLISH_SELECTOR,
