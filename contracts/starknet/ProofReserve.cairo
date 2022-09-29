@@ -24,6 +24,11 @@ struct DataInfo {
     balance: felt,
 }
 
+@storage_var
+func info(publisher: felt) -> (res: DataInfo) {
+}
+
+
 
 @storage_var
 func authorized_publisher(public_key: felt) -> (state: felt) {
@@ -50,9 +55,9 @@ func only_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 @constructor
 func constructor{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}() {
-    contract_admin.write(1443903124408663179676923566941061880487545664188);
-    authorized_publisher.write(761466874539515783303110363281120649054760260892, TRUE);
+}(admin: felt, publisher: felt) {
+    contract_admin.write(admin);
+    authorized_publisher.write(publisher, TRUE);
     return ();
 }
 
@@ -101,34 +106,49 @@ func post_data{
         );
     }
     //todo update the root, (format, address/balance)
+    
+    // update_root_hash()
     return ();
 }
 
 @external
 func post_data_l2{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}(entry: OracleEntry) {
+}(from_address: felt, asset_sym_little: felt,
+    asset_name_little: felt,
+    address_owner_little: felt,
+    balance_little: felt,
+    r_low: felt,
+    r_high: felt,
+    s_low: felt,
+    s_high: felt,
+    v: felt,
+    public_key: felt) {
     alloc_locals;
-    let proposed_public_key = entry.public_key;
+    let proposed_public_key = public_key;
     let (state) = authorized_publisher.read(public_key=proposed_public_key);
+    // verify if the post has the right to post data
     with_attr error_message("Address has no right to sign the message") {
         assert state = TRUE;
     }
-
+    // verify the signature of the sources
     with_attr error_message("Signature verification failed") {
         verify_oracle_message(
-            entry.asset_sym_little,
-            entry.asset_name_little,
-            entry.address_owner_little,
-            entry.balance_little,
-            entry.r_low,
-            entry.r_high,
-            entry.s_low,
-            entry.s_high,
-            entry.v,
-            entry.public_key,
+           asset_sym_little,
+            asset_name_little,
+            address_owner_little,
+            balance_little,
+            r_low,
+            r_high,
+            s_low,
+            s_high,
+            v,
+            public_key,
         );
     }
+    //todo update the root, (format, address/balance)
+    
+    // update_root_hash()
     return ();
 }
 
