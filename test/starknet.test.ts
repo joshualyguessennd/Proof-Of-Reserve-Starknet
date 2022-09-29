@@ -14,12 +14,21 @@ describe("test starknet contract", function () {
         expect(BigInt(0)).to.be.eq(isNotPublisher.res);
     })
 
+    it("add new publisher", async () => {
+        const { l2Contract, l2user, l2user1 } = await setupTest();
+        // expect tx to revert with non admin setter
+        expect(l2user1.invoke(l2Contract, "add_publisher", { new_publisher: l2user1.starknetContract.address })).to.rejected;
+        await l2user.invoke(l2Contract, "add_publisher", { new_publisher: l2user1.starknetContract.address })
+        const isPublisher = await l2Contract.call("isPublisher", { address: BigInt(l2user1.starknetContract.address) });
+        expect(BigInt(1)).to.be.eq(isPublisher.res);
+    })
 })
 
 
 
 async function setupTest() {
     const l2user = await starknet.deployAccount("OpenZeppelin");
+    const l2user1 = await starknet.deployAccount("OpenZeppelin");
     const l2ContractFactory = await starknet.getContractFactory(
         "contracts/starknet/ProofReserve"
     );
@@ -28,6 +37,7 @@ async function setupTest() {
 
     return {
         l2Contract: l2Contract as any,
-        l2user: l2user as any
+        l2user: l2user as any,
+        l2user1: l2user1 as any
     }
 }
