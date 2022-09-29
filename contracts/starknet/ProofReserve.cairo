@@ -61,6 +61,21 @@ func constructor{
     return ();
 }
 
+@view
+func get_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+)->(admin: felt) {
+
+    let (admin) = contract_admin.read();
+    return(admin=admin);
+}
+
+
+@view
+func isPublisher{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(address: felt) -> (res: felt){
+    let (res) = authorized_publisher.read(address);
+    return(res=res);
+}
+
 @external
 func add_publisher{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
