@@ -129,7 +129,7 @@ func post_data{
 @external
 func post_data_l2{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}(from_address: felt, asset_sym_little: felt,
+}(  asset_sym_little: felt,
     asset_name_little: felt,
     address_owner_little: felt,
     balance_little: felt,

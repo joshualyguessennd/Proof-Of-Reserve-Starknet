@@ -26,7 +26,7 @@ struct OracleEntry {
 }
 
 struct Entry {
-    key: felt,
+    key: felt,  // UTF-8 encoded lowercased string, e.g. "eth/usd"
     value: felt,
     timestamp: felt,
     source: felt,
