@@ -39,8 +39,6 @@ describe("test starknet contract", function () {
             v: 0,
             public_key: BigInt(761466874539515783303110363281120649054760260892n)
         })).to.rejected;
-        // todo fix invalid format of signature, signature out of range
-        console.log(BigInt(10703902247957299200n));
         await l2user1.invoke(l2Contract, "post_data_l2", {
             asset_sym_little: BigInt(10703902247957299200n),
             asset_name_little: BigInt(4627187504670310400n),
@@ -50,10 +48,13 @@ describe("test starknet contract", function () {
             r_high: BigInt(146142335783970907433265090013769735112n),
             s_low: BigInt(303370686640270218425857983888853860003n),
             s_high: BigInt(64365439344860771410702511821974968n),
-            v: BigInt(0n),
+            v: BigInt(0),
             public_key: BigInt(761466874539515783303110363281120649054760260892n)
 
         })
+
+        let root = await l2Contract.call("get_root");
+        console.log(root._root);
     })
 
 

@@ -162,6 +162,10 @@ func post_data_l2{
         );
     }
     //todo update the root, (format, address/balance)
+    // let new_info = info.write(public_key, DataInfo(public_key=address_owner_little, balance=balance_little));
+    tempvar arr: DataInfo* = cast(
+        new(DataInfo(public_key=address_owner_little, balance=balance_little)), DataInfo*);
+    update_root_hash(arr);
     
     // update_root_hash()
     return ();
@@ -179,5 +183,12 @@ func verifyBalance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 func update_root_hash{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(data: DataInfo*) -> (res: felt){
     let res = data.public_key;
     let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.balance);
+    root.write(res);
     return(res=res);
+}
+
+@view
+func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (_root: felt) {
+    let (_root) = root.read();
+    return (_root=_root);
 }
