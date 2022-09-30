@@ -149,7 +149,7 @@ func post_data_l2{
     // verify the signature of the sources
     with_attr error_message("Signature verification failed") {
         verify_oracle_message(
-           asset_sym_little,
+            asset_sym_little,
             asset_name_little,
             address_owner_little,
             balance_little,

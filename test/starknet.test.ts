@@ -28,7 +28,7 @@ describe("test starknet contract", function () {
 
         await l2user.invoke(l2Contract, "add_publisher", { new_publisher: l2user1.starknetContract.address })
         // expected it should failed
-        expect(await l2user1.invoke(l2Contract, "post_data_l2", {
+        expect(l2user1.invoke(l2Contract, "post_data_l2", {
             asset_sym_little: 0, asset_name_little: 0,
             address_owner_little: 0,
             balance_little: 0,
@@ -40,17 +40,18 @@ describe("test starknet contract", function () {
             public_key: BigInt(761466874539515783303110363281120649054760260892n)
         })).to.rejected;
         // todo fix invalid format of signature, signature out of range
+        console.log(BigInt(10703902247957299200n));
         await l2user1.invoke(l2Contract, "post_data_l2", {
-            asset_sym_little: 10703902247957299200,
-            asset_name_little: 4627187504670310400,
-            address_owner_little: 216172782113783808,
-            balance_little: 4412482,
-            r_low: 332795217045463323013001404630688413274,
-            r_high: 146142335783970907433265090013769735112,
-            s_low: 303370686640270218425857983888853860003,
-            s_high: 64365439344860771410702511821974968,
-            v: 0,
-            public_key: 761466874539515783303110363281120649054760260892
+            asset_sym_little: BigInt(10703902247957299200n),
+            asset_name_little: BigInt(4627187504670310400n),
+            address_owner_little: BigInt(216172782113783808n),
+            balance_little: BigInt(4412482n),
+            r_low: BigInt(332795217045463323013001404630688413274n),
+            r_high: BigInt(146142335783970907433265090013769735112n),
+            s_low: BigInt(303370686640270218425857983888853860003n),
+            s_high: BigInt(64365439344860771410702511821974968n),
+            v: BigInt(0n),
+            public_key: BigInt(761466874539515783303110363281120649054760260892n)
 
         })
     })
