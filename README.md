@@ -96,8 +96,25 @@ yarn test
 
 # Environnment (with Docker)
 
+Build the image and run `sleep 9999` command.
 ```
 docker compose up --build
+```
+
+Run a terminal where you start testnet-l1
+```
+docker exec -ti $(docker ps -f name=playground -q) bash
+yarn testnet:l1
+```
+
+Run a terminal where you start testnet-l1
+```
+docker exec -ti $(docker ps -f name=playground -q) bash
+yarn testnet:l2
+```
+
+Run a terminal where you run your tests
+```
 docker exec -ti $(docker ps -f name=playground -q) bash
 yarn test
 ```

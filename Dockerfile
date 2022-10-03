@@ -1,13 +1,10 @@
-FROM python:3.9.14
-
-ENV HOSTNAME_L1 testnet-l1
-ENV HOSTNAME_L2 testnet-l2
+FROM python:3.9.12
 
 RUN apt update -y && apt upgrade -y && apt install curl git libssl-dev libgmp3-dev -y
 
 # Copy folder
-COPY . aave-starknet-bridge
-WORKDIR aave-starknet-bridge
+COPY . proofofreserve
+WORKDIR proofofreserve
 
 # Install Python dependencies
 RUN rm -rf .venv && python -m venv .venv
@@ -29,7 +26,3 @@ RUN yarn
 
 # Build Cairo files
 RUN yarn compile:l2
-
-# Run tests
-# CMD [ "yarn", "testnet:l1" ]
-# CMD ["yarn", "testnet:l1", "&&", "yarn", "testnet:l2", "&&", "sleep", "999"]
