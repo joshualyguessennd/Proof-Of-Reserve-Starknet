@@ -39,7 +39,7 @@ describe("test starknet contract", function () {
             v: 0,
             public_key: BigInt(761466874539515783303110363281120649054760260892n)
         })).to.rejected;
-        await l2user1.invoke(l2Contract, "post_data_l2", {
+        let timestamp = await l2user1.invoke(l2Contract, "post_data_l2", {
             asset_sym_little: BigInt(10703902247957299200n),
             asset_name_little: BigInt(4627187504670310400n),
             address_owner_little: BigInt(216172782113783808n),
@@ -52,9 +52,11 @@ describe("test starknet contract", function () {
             public_key: BigInt(761466874539515783303110363281120649054760260892n)
 
         })
-
-        let root = await l2Contract.call("get_root");
-        console.log(root._root);
+        // console.log(BigInt(timestamp));
+        // let root = await l2Contract.call("get_root", { publisher: BigInt(761466874539515783303110363281120649054760260892n), asset: BigInt(4627187504670310400n), timestamp: timestamp });
+        let root = await l2Contract.call("get_root", { info: { publisher: BigInt(761466874539515783303110363281120649054760260892n), public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n), timestamp: timestamp } });
+        console.log("timestamp is", BigInt(timestamp));
+        console.log(root.res);
     })
 
 

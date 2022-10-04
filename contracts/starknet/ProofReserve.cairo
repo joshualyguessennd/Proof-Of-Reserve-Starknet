@@ -2,31 +2,32 @@
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin, HashBuiltin
 from starkware.cairo.common.pow import pow
-from starkware.starknet.common.syscalls import get_caller_address
+from starkware.starknet.common.syscalls import get_caller_address, get_block_timestamp
 from starkware.cairo.common.math import assert_not_equal
 from starkware.cairo.common.bool import TRUE, FALSE
 from starkware.cairo.common.hash import hash2
-
 from starknet.Library import verify_oracle_message, word_reverse_endian_64, OracleEntry, Entry
 
 @storage_var
 func contract_admin() -> (res: felt) {
 }
 
+struct DataInfo {
+    publisher: felt,
+    public_key: felt,
+    asset: felt,
+    balance: felt,
+    timestamp: felt,
+}
+
 @storage_var
-func root() -> (res: felt) {
+func root(asset: DataInfo) -> (res: felt) {
 }
 
 // data type to store account and balance
 // we'll hash the balance store and create a root
-struct DataInfo {
-    public_key: felt,
-    balance: felt,
-}
 
-@storage_var
-func info(publisher: felt) -> (res: DataInfo) {
-}
+
 
 
 
@@ -138,7 +139,7 @@ func post_data_l2{
     s_low: felt,
     s_high: felt,
     v: felt,
-    public_key: felt) {
+    public_key: felt) -> (timestamp: felt){
     alloc_locals;
     let proposed_public_key = public_key;
     let (state) = authorized_publisher.read(public_key=proposed_public_key);
@@ -163,12 +164,13 @@ func post_data_l2{
     }
     //todo update the root, (format, address/balance)
     // let new_info = info.write(public_key, DataInfo(public_key=address_owner_little, balance=balance_little));
-    tempvar arr: DataInfo* = cast(
-        new(DataInfo(public_key=address_owner_little, balance=balance_little)), DataInfo*);
-    update_root_hash(arr);
-    
-    // update_root_hash()
-    return ();
+    // tempvar arr: DataInfo* = cast(
+    //     new(DataInfo(public_key=address_owner_little, balance=balance_little)), DataInfo*);
+
+    let (timestamp) = get_block_timestamp();
+    tempvar arr: DataInfo = DataInfo(publisher= public_key, public_key=address_owner_little, asset=asset_name_little, balance=balance_little, timestamp=timestamp);
+    create_root(arr);
+    return (timestamp=timestamp);
 }
 
 // user call this function to verify if a address had this balance
@@ -180,15 +182,20 @@ func verifyBalance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 }
 
 //hash data and update a root
-func update_root_hash{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(data: DataInfo*) -> (res: felt){
+func create_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(data: DataInfo){
     let res = data.public_key;
+    let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.asset);
     let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.balance);
-    root.write(res);
-    return(res=res);
+    let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.timestamp);
+    root.write(data, res);
+    return ();
 }
 
 @view
-func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (_root: felt) {
-    let (_root) = root.read();
-    return (_root=_root);
+func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(info: DataInfo) -> (res: felt) {
+    alloc_locals;
+    // let (res) = root.read(publisher, asset, timestamp);
+    // assert res = 0;
+    let (res) = root.read(info);
+    return (res=res);
 }
