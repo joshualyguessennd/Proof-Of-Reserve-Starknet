@@ -13,15 +13,14 @@ func contract_admin() -> (res: felt) {
 }
 
 struct DataInfo {
-    publisher: felt,
     public_key: felt,
     asset: felt,
     balance: felt,
-    timestamp: felt,
+    // timestamp: felt,
 }
 
 @storage_var
-func root(asset: DataInfo) -> (res: felt) {
+func root(data: DataInfo) -> (res: felt) {
 }
 
 // data type to store account and balance
@@ -168,7 +167,8 @@ func post_data_l2{
     //     new(DataInfo(public_key=address_owner_little, balance=balance_little)), DataInfo*);
 
     let (timestamp) = get_block_timestamp();
-    tempvar arr: DataInfo = DataInfo(publisher= public_key, public_key=address_owner_little, asset=asset_name_little, balance=balance_little, timestamp=timestamp);
+    // local arr: DataInfo = DataInfo(public_key=address_owner_little, asset=asset_name_little, balance=balance_little, timestamp=timestamp);
+        local arr: DataInfo = DataInfo(public_key=address_owner_little, asset=asset_name_little, balance=balance_little);
     create_root(arr);
     return (timestamp=timestamp);
 }
@@ -186,8 +186,8 @@ func create_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     let res = data.public_key;
     let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.asset);
     let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.balance);
-    let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.timestamp);
-    root.write(data, res);
+    // let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.timestamp);
+    root.write(data=data, value=res);
     return ();
 }
 
@@ -196,6 +196,6 @@ func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(i
     alloc_locals;
     // let (res) = root.read(publisher, asset, timestamp);
     // assert res = 0;
-    let (res) = root.read(info);
+    let (res) = root.read(data=info);
     return (res=res);
 }

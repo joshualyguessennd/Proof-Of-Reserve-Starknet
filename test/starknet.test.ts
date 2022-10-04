@@ -54,7 +54,8 @@ describe("test starknet contract", function () {
         })
         // console.log(BigInt(timestamp));
         // let root = await l2Contract.call("get_root", { publisher: BigInt(761466874539515783303110363281120649054760260892n), asset: BigInt(4627187504670310400n), timestamp: timestamp });
-        let root = await l2Contract.call("get_root", { info: { publisher: BigInt(761466874539515783303110363281120649054760260892n), public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n), timestamp: timestamp } });
+        // let root = await l2Contract.call("get_root", { info: { public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n), timestamp: timestamp } });
+        let root = await l2Contract.call("get_root", { info: { public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n) } });
         console.log("timestamp is", BigInt(timestamp));
         console.log(root.res);
     })
