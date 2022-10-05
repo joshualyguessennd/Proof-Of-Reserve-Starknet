@@ -7,7 +7,7 @@ from starkware.cairo.common.math import assert_not_equal
 from starkware.cairo.common.bool import TRUE, FALSE
 from starkware.cairo.common.hash import hash2
 from starknet.Library import verify_oracle_message, word_reverse_endian_64, OracleEntry, Entry
-from starkware.cairo.common.math import unsigned_div_rem
+from starkware.cairo.common.math_cmp import is_le_felt
 
 @storage_var
 func contract_admin() -> (res: felt) {
@@ -20,33 +20,14 @@ struct DataInfo {
     // timestamp: felt,
 }
 
-// @storage_var
-// func root(data: DataInfo) -> (res: felt) {
-// }
 @storage_var
 func root(public_key: felt, asset: felt, balance: felt) -> (res: felt) {
 }
 
-
-// data type to store account and balance
-// we'll hash the balance store and create a root
-
-
-
-
-
 @storage_var
 func authorized_publisher(public_key: felt) -> (state: felt) {
 }
-@contract_interface
-namespace IOracleController {
-    func publish_entry(entry: Entry) {
-    }
-    func get_decimals(key: felt) -> (decimals: felt) {
-    }
-    func get_admin_address() -> (admin_address: felt) {
-    }
-}
+
 
 func only_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
     let (caller) = get_caller_address();
@@ -90,6 +71,7 @@ func add_publisher{
     return ();
 }
 
+///l1 message, to do generate the root and store directly from ethereum side
 @l1_handler
 func post_data{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
@@ -167,10 +149,13 @@ func post_data_l2{
         );
     }
     let (timestamp) = get_block_timestamp();
-    // add timestamp to the root
-    let (root_) = create_root(address_owner_little, asset_name_little, balance_little);
-    // store root
-    // to do use timestamp as entry
+    let (local proofs: felt*) = alloc();
+    assert proofs[0] = address_owner_little;
+    assert proofs[1] = asset_name_little;
+    assert proofs[2] = balance_little;
+
+    let proofs_len = 3;
+    let (root_) = calc_hash(0, proofs_len, proofs);
     root.write(address_owner_little, asset_name_little, balance_little, root_);
     
     return (timestamp=timestamp);
@@ -184,28 +169,44 @@ func verifyBalance{
         range_check_ptr,
         ecdsa_ptr : SignatureBuiltin*
 }(
-    address: felt, asset: felt, balance: felt
+    leaf: felt, merkle_root: felt, proof_len: felt, proof: felt*
 ) -> (res:felt){
     alloc_locals;
-    // generate a hash
-    let (generate_root) = create_root(address, asset, balance);
-    // get root store in the contract
-    let (res) = root.read(address, asset, balance);
-
-    if (generate_root == res) {
+    // calculate root
+    let (get_root) = calc_hash(leaf, proof_len, proof);
+    // check if the root is stored
+    if(get_root==merkle_root){
         return (res=1);
     }
     return (res=0);
 }
 
-//hash data and update a root
-func create_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(public_key: felt, asset: felt, balance: felt) -> (res: felt){
-    let res = public_key;
-    let (res) = hash2{hash_ptr=pedersen_ptr}(res, asset);
-    let (res) = hash2{hash_ptr=pedersen_ptr}(res, balance);
-    return (res,);
+// generate hash
+func calc_hash{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    curr: felt, 
+    proof_len: felt,
+    proof: felt*
+) -> (res: felt){
+    alloc_locals;
+    if (proof_len == 0) {
+        return (res=curr);
+    }
+
+    local node;
+    local proofElement = [proof];
+    let le = is_le_felt(curr, proofElement);
+    if (le==1){
+        let (n) = hash2{hash_ptr=pedersen_ptr}(curr, proofElement);
+        node = n;
+    } else {
+        let (n) = hash2{hash_ptr=pedersen_ptr}(proofElement, curr);
+        node = n;
+    }
+    let (res) = calc_hash(node, proof_len-1, proof+1); 
+    return (res=res);
 }
 
+// help function to get the exact hash stored by a publisher
 @view
 func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(public_key: felt, asset: felt, balance: felt) -> (res: felt) {
     alloc_locals;
