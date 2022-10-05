@@ -1,12 +1,13 @@
 %lang starknet
 from starkware.cairo.common.alloc import alloc
-from starkware.cairo.common.cairo_builtins import BitwiseBuiltin, HashBuiltin
+from starkware.cairo.common.cairo_builtins import BitwiseBuiltin, HashBuiltin, SignatureBuiltin
 from starkware.cairo.common.pow import pow
 from starkware.starknet.common.syscalls import get_caller_address, get_block_timestamp
 from starkware.cairo.common.math import assert_not_equal
 from starkware.cairo.common.bool import TRUE, FALSE
 from starkware.cairo.common.hash import hash2
 from starknet.Library import verify_oracle_message, word_reverse_endian_64, OracleEntry, Entry
+from starkware.cairo.common.math import unsigned_div_rem
 
 @storage_var
 func contract_admin() -> (res: felt) {
@@ -19,9 +20,13 @@ struct DataInfo {
     // timestamp: felt,
 }
 
+// @storage_var
+// func root(data: DataInfo) -> (res: felt) {
+// }
 @storage_var
-func root(data: DataInfo) -> (res: felt) {
+func root(public_key: felt, asset: felt, balance: felt) -> (res: felt) {
 }
+
 
 // data type to store account and balance
 // we'll hash the balance store and create a root
@@ -161,41 +166,48 @@ func post_data_l2{
             public_key,
         );
     }
-    //todo update the root, (format, address/balance)
-    // let new_info = info.write(public_key, DataInfo(public_key=address_owner_little, balance=balance_little));
-    // tempvar arr: DataInfo* = cast(
-    //     new(DataInfo(public_key=address_owner_little, balance=balance_little)), DataInfo*);
-
     let (timestamp) = get_block_timestamp();
-    // local arr: DataInfo = DataInfo(public_key=address_owner_little, asset=asset_name_little, balance=balance_little, timestamp=timestamp);
-        local arr: DataInfo = DataInfo(public_key=address_owner_little, asset=asset_name_little, balance=balance_little);
-    create_root(arr);
+    // add timestamp to the root
+    create_root(address_owner_little, asset_name_little, balance_little);
     return (timestamp=timestamp);
 }
 
 // user call this function to verify if a address had this balance
-@external
-func verifyBalance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-   address: felt, balance
-){
-    return ();
-}
+// @external
+// func verifyBalance{
+//         syscall_ptr : felt*, 
+//         pedersen_ptr : HashBuiltin*, 
+//         range_check_ptr,
+//         ecdsa_ptr : SignatureBuiltin*
+// }(
+//    proofs_len: felt, proofs: felt*, proofs_idx: felt, root: felt, leaf: felt, index: felt
+// ){
+//     alloc_locals;
+//     if(proofs_idx == proofs_len) {
+//         assert leaf = root;
+//         return ();
+//     }
+//     let hash = leaf;
+//     let ProofElement = [proofs + proofs_idx];
+//     let (index_divisible_by_2) = get_modulo(index, 3);
+//     if(index_divisible_by_2 == 0){
+//         let (new_hash) = create_root()
+//     }
+//     return ();
+// }
 
 //hash data and update a root
-func create_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(data: DataInfo){
-    let res = data.public_key;
-    let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.asset);
-    let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.balance);
-    // let (res) = hash2{hash_ptr=pedersen_ptr}(res, data.timestamp);
-    root.write(data=data, value=res);
+func create_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(public_key: felt, asset: felt, balance: felt){
+    let res = public_key;
+    let (res) = hash2{hash_ptr=pedersen_ptr}(res, asset);
+    let (res) = hash2{hash_ptr=pedersen_ptr}(res, balance);
+    root.write(public_key, asset, balance, res);
     return ();
 }
 
 @view
-func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(info: DataInfo) -> (res: felt) {
+func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(public_key: felt, asset: felt, balance: felt) -> (res: felt) {
     alloc_locals;
-    // let (res) = root.read(publisher, asset, timestamp);
-    // assert res = 0;
-    let (res) = root.read(data=info);
+    let (res) = root.read(public_key, asset, balance);
     return (res=res);
 }
