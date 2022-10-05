@@ -40,8 +40,7 @@ jobs:
           yarn compile:l1
           yarn compile:l2
       
-      - name: Run tests
+      - name: Run tests starknet
         run: |
           yarn testnet:l2 &
-          yarn testnet:l1 &
-          yarn test
+          npx hardhat test test/starknet.test.ts
