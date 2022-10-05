@@ -21,7 +21,7 @@ struct DataInfo {
 }
 
 @storage_var
-func root(public_key: felt, asset: felt, balance: felt) -> (res: felt) {
+func root(public_key: felt, asset: felt, balance: felt, timestamp: felt) -> (res: felt) {
 }
 
 @storage_var
@@ -153,10 +153,11 @@ func post_data_l2{
     assert proofs[0] = address_owner_little;
     assert proofs[1] = asset_name_little;
     assert proofs[2] = balance_little;
+    assert proofs[3] = timestamp;
 
     let proofs_len = 3;
     let (root_) = calc_hash(0, proofs_len, proofs);
-    root.write(address_owner_little, asset_name_little, balance_little, root_);
+    root.write(address_owner_little, asset_name_little, balance_little, timestamp, root_);
     
     return (timestamp=timestamp);
 }
@@ -208,8 +209,8 @@ func calc_hash{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 // help function to get the exact hash stored by a publisher
 @view
-func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(public_key: felt, asset: felt, balance: felt) -> (res: felt) {
+func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(public_key: felt, asset: felt, balance: felt, timestamp: felt) -> (res: felt) {
     alloc_locals;
-    let (res) = root.read(public_key, asset, balance);
+    let (res) = root.read(public_key, asset, balance, timestamp);
     return (res=res);
 }
