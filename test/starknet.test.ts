@@ -52,13 +52,20 @@ describe("test starknet contract", function () {
             public_key: BigInt(761466874539515783303110363281120649054760260892n)
 
         })
-        // console.log(BigInt(timestamp));
-        // let root = await l2Contract.call("get_root", { publisher: BigInt(761466874539515783303110363281120649054760260892n), asset: BigInt(4627187504670310400n), timestamp: timestamp });
-        // let root = await l2Contract.call("get_root", { info: { public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n), timestamp: timestamp } });
         let root = await l2Contract.call("get_root", { public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n) });
         // let root = await l2Contract.call("get_root", { info: { public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n), timestamp: BigInt(timestamp) } });
         console.log("timestamp is", BigInt(timestamp));
         console.log(root.res);
+
+        // verify root
+        let result = await l2Contract.call("verifyBalance", { address: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n) })
+        console.log(result.res);
+        // verify the root is valid
+        expect(BigInt(1)).to.be.eq(result.res);
+        // verfify the root is wrong
+        let result_1 = await l2Contract.call("verifyBalance", { address: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(441282n) })
+        console.log(result_1.res);
+        expect(BigInt(0)).to.be.eq(result_1.res);
     })
 
 

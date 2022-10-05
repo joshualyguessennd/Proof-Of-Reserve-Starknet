@@ -168,41 +168,42 @@ func post_data_l2{
     }
     let (timestamp) = get_block_timestamp();
     // add timestamp to the root
-    create_root(address_owner_little, asset_name_little, balance_little);
+    let (root_) = create_root(address_owner_little, asset_name_little, balance_little);
+    // store root
+    // to do use timestamp as entry
+    root.write(address_owner_little, asset_name_little, balance_little, root_);
+    
     return (timestamp=timestamp);
 }
 
 // user call this function to verify if a address had this balance
-// @external
-// func verifyBalance{
-//         syscall_ptr : felt*, 
-//         pedersen_ptr : HashBuiltin*, 
-//         range_check_ptr,
-//         ecdsa_ptr : SignatureBuiltin*
-// }(
-//    proofs_len: felt, proofs: felt*, proofs_idx: felt, root: felt, leaf: felt, index: felt
-// ){
-//     alloc_locals;
-//     if(proofs_idx == proofs_len) {
-//         assert leaf = root;
-//         return ();
-//     }
-//     let hash = leaf;
-//     let ProofElement = [proofs + proofs_idx];
-//     let (index_divisible_by_2) = get_modulo(index, 3);
-//     if(index_divisible_by_2 == 0){
-//         let (new_hash) = create_root()
-//     }
-//     return ();
-// }
+@view
+func verifyBalance{
+        syscall_ptr : felt*, 
+        pedersen_ptr : HashBuiltin*, 
+        range_check_ptr,
+        ecdsa_ptr : SignatureBuiltin*
+}(
+    address: felt, asset: felt, balance: felt
+) -> (res:felt){
+    alloc_locals;
+    // generate a hash
+    let (generate_root) = create_root(address, asset, balance);
+    // get root store in the contract
+    let (res) = root.read(address, asset, balance);
+
+    if (generate_root == res) {
+        return (res=1);
+    }
+    return (res=0);
+}
 
 //hash data and update a root
-func create_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(public_key: felt, asset: felt, balance: felt){
+func create_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(public_key: felt, asset: felt, balance: felt) -> (res: felt){
     let res = public_key;
     let (res) = hash2{hash_ptr=pedersen_ptr}(res, asset);
     let (res) = hash2{hash_ptr=pedersen_ptr}(res, balance);
-    root.write(public_key, asset, balance, res);
-    return ();
+    return (res,);
 }
 
 @view
