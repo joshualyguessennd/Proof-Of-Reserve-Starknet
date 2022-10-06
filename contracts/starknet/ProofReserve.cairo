@@ -154,7 +154,7 @@ func post_data_l2{
 
 // user call this function to verify if a address had this balance
 @view
-func verifyBalance{
+func verify_balance{
         syscall_ptr : felt*, 
         pedersen_ptr : HashBuiltin*, 
         range_check_ptr,

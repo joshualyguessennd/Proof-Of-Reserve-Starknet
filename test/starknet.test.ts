@@ -27,7 +27,7 @@ describe("test starknet contract", function () {
         const { l2Contract, l2user, l2user1 } = await setupTest();
 
         await l2user.invoke(l2Contract, "add_publisher", { new_publisher: l2user1.starknetContract.address })
-        // expected it should failed with unauthorized publisher
+        // expect it to fail  with unauthorized publisher
         expect(l2user1.invoke(l2Contract, "post_data_l2", {
             asset_sym_little: 0, asset_name_little: 0,
             address_owner_little: 0,
@@ -39,7 +39,7 @@ describe("test starknet contract", function () {
             v: 0,
             public_key: BigInt(0n)
         })).to.rejected;
-        // expected it should failed with invalid signature
+        // expect it to fail with invalid signature
         expect(l2user1.invoke(l2Contract, "post_data_l2", {
             asset_sym_little: 0, asset_name_little: 0,
             address_owner_little: 0,
@@ -69,11 +69,10 @@ describe("test starknet contract", function () {
         console.log("the root is", root.res);
         // verify root
         let result = await l2Contract.call("verifyBalance", { leaf: 0, merkle_root: root.res, proof: [BigInt(216172782113783808n), BigInt(4627187504670310400n), BigInt(4412482n), BigInt(122344n)] })
-        // // verify the root is valid
+        // verify the root is valid
         expect(BigInt(1)).to.be.eq(result.res);
         // // verfify the root is wrong
         let result_1 = await l2Contract.call("verifyBalance", { leaf: 0, merkle_root: root.res, proof: [BigInt(216172782113783808n), BigInt(4627187504670310400n), BigInt(441248200n), BigInt(12244n)] })
-        // // console.log(result_1.res);
         expect(BigInt(0)).to.be.eq(result_1.res);
     })
 
