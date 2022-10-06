@@ -8,9 +8,9 @@ describe("test starknet contract", function () {
         const { l2Contract, l2user } = await setupTest();
         const address_owner = await l2Contract.call("get_admin");
         expect(BigInt(l2user.address)).to.be.eq(address_owner.admin);
-        const isPublisher = await l2Contract.call("isPublisher", { address: BigInt(761466874539515783303110363281120649054760260892n) });
+        const isPublisher = await l2Contract.call("is_publisher", { address: BigInt(761466874539515783303110363281120649054760260892n) });
         expect(BigInt(1)).to.be.eq(isPublisher.res);
-        const isNotPublisher = await l2Contract.call("isPublisher", { address: BigInt(761466874539) });
+        const isNotPublisher = await l2Contract.call("is_publisher", { address: BigInt(761466874539) });
         expect(BigInt(0)).to.be.eq(isNotPublisher.res);
     })
 
@@ -19,7 +19,7 @@ describe("test starknet contract", function () {
         // expect tx to revert with non admin setter
         expect(l2user1.invoke(l2Contract, "add_publisher", { new_publisher: l2user1.starknetContract.address })).to.rejected;
         await l2user.invoke(l2Contract, "add_publisher", { new_publisher: l2user1.starknetContract.address })
-        const isPublisher = await l2Contract.call("isPublisher", { address: BigInt(l2user1.starknetContract.address) });
+        const isPublisher = await l2Contract.call("is_publisher", { address: BigInt(l2user1.starknetContract.address) });
         expect(BigInt(1)).to.be.eq(isPublisher.res);
     })
 
@@ -68,11 +68,11 @@ describe("test starknet contract", function () {
         let root = await l2Contract.call("get_root", { public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n), timestamp: BigInt(122344n) });
         console.log("the root is", root.res);
         // verify root
-        let result = await l2Contract.call("verifyBalance", { leaf: 0, merkle_root: root.res, proof: [BigInt(216172782113783808n), BigInt(4627187504670310400n), BigInt(4412482n), BigInt(122344n)] })
+        let result = await l2Contract.call("verify_balance", { leaf: 0, merkle_root: root.res, proof: [BigInt(216172782113783808n), BigInt(4627187504670310400n), BigInt(4412482n), BigInt(122344n)] })
         // verify the root is valid
         expect(BigInt(1)).to.be.eq(result.res);
         // // verfify the root is wrong
-        let result_1 = await l2Contract.call("verifyBalance", { leaf: 0, merkle_root: root.res, proof: [BigInt(216172782113783808n), BigInt(4627187504670310400n), BigInt(441248200n), BigInt(12244n)] })
+        let result_1 = await l2Contract.call("verify_balance", { leaf: 0, merkle_root: root.res, proof: [BigInt(216172782113783808n), BigInt(4627187504670310400n), BigInt(441248200n), BigInt(12244n)] })
         expect(BigInt(0)).to.be.eq(result_1.res);
     })
 

@@ -50,7 +50,7 @@ func get_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 
 @view
-func isPublisher{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(address: felt) -> (res: felt){
+func is_publisher{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(address: felt) -> (res: felt){
     let (res) = authorized_publisher.read(address);
     return(res=res);
 }
@@ -184,13 +184,13 @@ func calc_hash{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     }
 
     local node;
-    local proofElement = [proof];
-    let le = is_le_felt(curr, proofElement);
+    local proof_element = [proof];
+    let le = is_le_felt(curr, proof_element);
     if (le==1){
-        let (n) = hash2{hash_ptr=pedersen_ptr}(curr, proofElement);
+        let (n) = hash2{hash_ptr=pedersen_ptr}(curr, proof_element);
         node = n;
     } else {
-        let (n) = hash2{hash_ptr=pedersen_ptr}(proofElement, curr);
+        let (n) = hash2{hash_ptr=pedersen_ptr}(proof_element, curr);
         node = n;
     }
     let (res) = calc_hash(node, proof_len-1, proof+1); 
