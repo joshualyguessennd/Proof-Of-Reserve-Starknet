@@ -14,7 +14,7 @@ func contract_admin() -> (res: felt) {
 }
 
 @storage_var
-func root(public_key: felt, asset: felt, balance: felt, timestamp: felt) -> (res: felt) {
+func roots(public_key: felt, asset: felt, balance: felt, timestamp: felt) -> (res: felt) {
 }
 
 @storage_var
@@ -68,10 +68,10 @@ func add_publisher{
 @l1_handler
 func post_data{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}(from_address: felt, asset_sym_little: felt,
-    asset_name_little: felt,
-    address_owner_little: felt,
-    balance_little: felt,
+}(from_address: felt, asset_sym: felt,
+    asset_name: felt,
+    address_owner: felt,
+    balance: felt,
     r_low: felt,
     r_high: felt,
     s_low: felt,
@@ -88,10 +88,10 @@ func post_data{
     // verify the signature of the sources
     with_attr error_message("Signature verification failed") {
         verify_oracle_message(
-           asset_sym_little,
-            asset_name_little,
-            address_owner_little,
-            balance_little,
+           asset_sym,
+            asset_name,
+            address_owner,
+            balance,
             r_low,
             r_high,
             s_low,
@@ -106,10 +106,10 @@ func post_data{
 @external
 func post_data_l2{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}(  asset_sym_little: felt,
-    asset_name_little: felt,
-    address_owner_little: felt,
-    balance_little: felt,
+}(  asset_sym: felt,
+    asset_name: felt,
+    address_owner: felt,
+    balance: felt,
     timestamp: felt,
     r_low: felt,
     r_high: felt,
@@ -127,10 +127,10 @@ func post_data_l2{
     // verify the signature of the sources
     with_attr error_message("Signature verification failed") {
         verify_oracle_message(
-            asset_sym_little,
-            asset_name_little,
-            address_owner_little,
-            balance_little,
+            asset_sym,
+            asset_name,
+            address_owner,
+            balance,
             r_low,
             r_high,
             s_low,
@@ -139,15 +139,8 @@ func post_data_l2{
             public_key,
         );
     }
-    let (local proofs: felt*) = alloc();
-    assert proofs[0] = address_owner_little;
-    assert proofs[1] = asset_name_little;
-    assert proofs[2] = balance_little;
-    assert proofs[3] = timestamp;
-
-    let proofs_len = 4;
-    let (root_) = calc_hash(0, proofs_len, proofs);
-    root.write(address_owner_little, asset_name_little, balance_little, timestamp, root_);
+    let (root_) = calc_hash(0, 4, new(address_owner, asset_name, balance, timestamp));
+    roots.write(address_owner, asset_name, balance, timestamp, root_);
     
     return ();
 }
@@ -164,9 +157,9 @@ func verify_balance{
 ) -> (res:felt){
     alloc_locals;
     // calculate root
-    let (get_root) = calc_hash(leaf, proof_len, proof);
+    let (root) = calc_hash(leaf, proof_len, proof);
     // check if the root is stored
-    if(get_root==merkle_root){
+    if(root==merkle_root){
         return (res=1);
     }
     return (res=0);
@@ -201,6 +194,6 @@ func calc_hash{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 @view
 func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(public_key: felt, asset: felt, balance: felt, timestamp: felt) -> (res: felt) {
     alloc_locals;
-    let (res) = root.read(public_key, asset, balance, timestamp);
+    let (res) = roots.read(public_key, asset, balance, timestamp);
     return (res=res);
 }

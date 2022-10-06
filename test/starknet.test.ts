@@ -29,9 +29,9 @@ describe("test starknet contract", function () {
         await l2user.invoke(l2Contract, "add_publisher", { new_publisher: l2user1.starknetContract.address })
         // expect it to fail  with unauthorized publisher
         expect(l2user1.invoke(l2Contract, "post_data_l2", {
-            asset_sym_little: 0, asset_name_little: 0,
-            address_owner_little: 0,
-            balance_little: 0,
+            asset_sym: 0, asset_name: 0,
+            address_owner: 0,
+            balance: 0,
             r_low: 0,
             r_high: 0,
             s_low: 0,
@@ -41,9 +41,9 @@ describe("test starknet contract", function () {
         })).to.rejected;
         // expect it to fail with invalid signature
         expect(l2user1.invoke(l2Contract, "post_data_l2", {
-            asset_sym_little: 0, asset_name_little: 0,
-            address_owner_little: 0,
-            balance_little: 0,
+            asset_sym: 0, asset_name: 0,
+            address_owner: 0,
+            balance: 0,
             r_low: 0,
             r_high: 0,
             s_low: 0,
@@ -52,11 +52,11 @@ describe("test starknet contract", function () {
             public_key: BigInt(761466874539515783303110363281120649054760260892n)
         })).to.rejected;
         await l2user1.invoke(l2Contract, "post_data_l2", {
-            asset_sym_little: BigInt(10703902247957299200n),
-            asset_name_little: BigInt(4627187504670310400n),
-            address_owner_little: BigInt(216172782113783808n),
+            asset_sym: BigInt(10703902247957299200n),
+            asset_name: BigInt(4627187504670310400n),
+            address_owner: BigInt(216172782113783808n),
             timestamp: BigInt(122344n),
-            balance_little: BigInt(4412482n),
+            balance: BigInt(4412482n),
             r_low: BigInt(332795217045463323013001404630688413274n),
             r_high: BigInt(146142335783970907433265090013769735112n),
             s_low: BigInt(303370686640270218425857983888853860003n),
