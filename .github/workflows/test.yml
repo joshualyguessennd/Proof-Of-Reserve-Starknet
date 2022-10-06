@@ -40,7 +40,7 @@ jobs:
           yarn compile:l2
       
       - name: Run devnet
-        run: yarn testnet:l2
+        run: yarn testnet:l2 &
      
       - name: Run tests
         run: |
