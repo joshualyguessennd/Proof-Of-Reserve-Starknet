@@ -27,7 +27,19 @@ describe("test starknet contract", function () {
         const { l2Contract, l2user, l2user1 } = await setupTest();
 
         await l2user.invoke(l2Contract, "add_publisher", { new_publisher: l2user1.starknetContract.address })
-        // expected it should failed
+        // expected it should failed with unauthorized publisher
+        expect(l2user1.invoke(l2Contract, "post_data_l2", {
+            asset_sym_little: 0, asset_name_little: 0,
+            address_owner_little: 0,
+            balance_little: 0,
+            r_low: 0,
+            r_high: 0,
+            s_low: 0,
+            s_high: 0,
+            v: 0,
+            public_key: BigInt(0n)
+        })).to.rejected;
+        // expected it should failed with invalid signature
         expect(l2user1.invoke(l2Contract, "post_data_l2", {
             asset_sym_little: 0, asset_name_little: 0,
             address_owner_little: 0,
@@ -39,10 +51,11 @@ describe("test starknet contract", function () {
             v: 0,
             public_key: BigInt(761466874539515783303110363281120649054760260892n)
         })).to.rejected;
-        let timestamp = await l2user1.invoke(l2Contract, "post_data_l2", {
+        await l2user1.invoke(l2Contract, "post_data_l2", {
             asset_sym_little: BigInt(10703902247957299200n),
             asset_name_little: BigInt(4627187504670310400n),
             address_owner_little: BigInt(216172782113783808n),
+            timestamp: BigInt(122344n),
             balance_little: BigInt(4412482n),
             r_low: BigInt(332795217045463323013001404630688413274n),
             r_high: BigInt(146142335783970907433265090013769735112n),
@@ -52,19 +65,15 @@ describe("test starknet contract", function () {
             public_key: BigInt(761466874539515783303110363281120649054760260892n)
 
         })
-        let root = await l2Contract.call("get_root", { public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n), timestamp: BigInt(timestamp) });
-        // let root = await l2Contract.call("get_root", { info: { public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n), timestamp: BigInt(timestamp) } });
-        console.log("timestamp is", BigInt(timestamp));
-        let timeTouse = BigInt(timestamp);
-        console.log("time is", timeTouse)
-        console.log(root.res);
+        let root = await l2Contract.call("get_root", { public_key: BigInt(216172782113783808n), asset: BigInt(4627187504670310400n), balance: BigInt(4412482n), timestamp: BigInt(122344n) });
+        console.log("the root is", root.res);
         // verify root
-        let result = await l2Contract.call("verifyBalance", { leaf: 0, merkle_root: root.res, proof: [BigInt(216172782113783808n), BigInt(4627187504670310400n), BigInt(4412482n), timeTouse] })
-        // verify the root is valid
+        let result = await l2Contract.call("verifyBalance", { leaf: 0, merkle_root: root.res, proof: [BigInt(216172782113783808n), BigInt(4627187504670310400n), BigInt(4412482n), BigInt(122344n)] })
+        // // verify the root is valid
         expect(BigInt(1)).to.be.eq(result.res);
-        // verfify the root is wrong
-        let result_1 = await l2Contract.call("verifyBalance", { leaf: 0, merkle_root: root.res, proof: [BigInt(216172782113783808n), BigInt(4627187504670310400n), BigInt(441248200n), timeTouse] })
-        // console.log(result_1.res);
+        // // verfify the root is wrong
+        let result_1 = await l2Contract.call("verifyBalance", { leaf: 0, merkle_root: root.res, proof: [BigInt(216172782113783808n), BigInt(4627187504670310400n), BigInt(441248200n), BigInt(12244n)] })
+        // // console.log(result_1.res);
         expect(BigInt(0)).to.be.eq(result_1.res);
     })
 

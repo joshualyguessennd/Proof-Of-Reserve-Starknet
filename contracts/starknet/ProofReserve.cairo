@@ -13,13 +13,6 @@ from starkware.cairo.common.math_cmp import is_le_felt
 func contract_admin() -> (res: felt) {
 }
 
-struct DataInfo {
-    public_key: felt,
-    asset: felt,
-    balance: felt,
-    // timestamp: felt,
-}
-
 @storage_var
 func root(public_key: felt, asset: felt, balance: felt, timestamp: felt) -> (res: felt) {
 }
@@ -107,9 +100,6 @@ func post_data{
             public_key,
         );
     }
-    //todo update the root, (format, address/balance)
-    
-    // update_root_hash()
     return ();
 }
 
@@ -120,12 +110,13 @@ func post_data_l2{
     asset_name_little: felt,
     address_owner_little: felt,
     balance_little: felt,
+    timestamp: felt,
     r_low: felt,
     r_high: felt,
     s_low: felt,
     s_high: felt,
     v: felt,
-    public_key: felt) -> (timestamp: felt){
+    public_key: felt){
     alloc_locals;
     let proposed_public_key = public_key;
     let (state) = authorized_publisher.read(public_key=proposed_public_key);
@@ -148,18 +139,17 @@ func post_data_l2{
             public_key,
         );
     }
-    let (timestamp) = get_block_timestamp();
     let (local proofs: felt*) = alloc();
     assert proofs[0] = address_owner_little;
     assert proofs[1] = asset_name_little;
     assert proofs[2] = balance_little;
     assert proofs[3] = timestamp;
 
-    let proofs_len = 3;
+    let proofs_len = 4;
     let (root_) = calc_hash(0, proofs_len, proofs);
     root.write(address_owner_little, asset_name_little, balance_little, timestamp, root_);
     
-    return (timestamp=timestamp);
+    return ();
 }
 
 // user call this function to verify if a address had this balance
