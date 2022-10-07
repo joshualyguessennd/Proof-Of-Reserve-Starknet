@@ -36,12 +36,14 @@ jobs:
           yarn
       
       - name: Compile Cairo
-        run: |
-          yarn compile:l1
+        run:
           yarn compile:l2
       
+      - name: Run devnet
+        run: yarn testnet:l2 &
+     
       - name: Run tests
         run: |
-          yarn testnet:l2 &
-          yarn testnet:l1 &
-          yarn test
+          npx hardhat test test/starknet.test.ts
+          
+      
