@@ -72,6 +72,7 @@ func post_data{
     asset_name: felt,
     address_owner: felt,
     balance: felt,
+    timestamp: felt,
     r_low: felt,
     r_high: felt,
     s_low: felt,
@@ -100,6 +101,8 @@ func post_data{
             public_key,
         );
     }
+    let (root_) = calc_hash(0, 4, new(address_owner, asset_name, balance, timestamp));
+    roots.write(address_owner, asset_name, balance, timestamp, root_);
     return ();
 }
 

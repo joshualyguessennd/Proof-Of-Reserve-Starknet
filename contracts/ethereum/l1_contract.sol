@@ -60,8 +60,8 @@ contract L1_CONTRACT {
      *@param account_balance amount of asset address owns
      */
     function publishData(
-        int256 asset_symbol,
-        int256 asset_name,
+        uint256 asset_symbol,
+        uint256 asset_name,
         address _account,
         uint256 account_balance,
         bytes32 r,
@@ -71,9 +71,9 @@ contract L1_CONTRACT {
         if (isAllowed[msg.sender] != true) {
             revert IsNotPublisher();
         }
-        uint256[] memory payload = new uint256[](10);
-        uint256 sym = uint256(asset_symbol);
-        uint256 asset = uint256(asset_name);
+        uint256[] memory payload = new uint256[](11);
+        uint256 sym = asset_symbol;
+        uint256 asset = asset_name;
         uint256 address_account = uint256(uint160(_account));
         uint256 _r = uint256(r);
         uint256 _s = uint256(s);
@@ -82,11 +82,12 @@ contract L1_CONTRACT {
         payload[1] = asset;
         payload[2] = address_account;
         payload[3] = account_balance;
-        (payload[4], payload[5]) = toSplitUint(_r);
-        (payload[6], payload[7]) = toSplitUint(_s);
+        payload[4] = block.timestamp;
+        (payload[5], payload[6]) = toSplitUint(_r);
+        (payload[7], payload[8]) = toSplitUint(_s);
         // v
-        payload[8] = v;
-        payload[9] = uint256(uint160(address(msg.sender)));
+        payload[9] = v;
+        payload[10] = uint256(uint160(address(msg.sender)));
         // store the data for the next round
         data[msg.sender] = DataInfo(msg.sender, payload);
     }
