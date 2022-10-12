@@ -36,7 +36,7 @@ jobs:
           yarn
       
       - name: Compile Contracts
-        run:
+        run: |        
           yarn compile:l2
           yarn compile:l1
       
