@@ -54,6 +54,14 @@ contract L1_CONTRACT {
     }
 
     /**
+    @dev add a new publisher address
+    @param _keeper new address allows to post data 
+    */
+    function addNewKeeper(address _keeper) external onlyOwner {
+        keeper = _keeper;
+    }
+
+    /**
      *@param asset_symbol symbol of asset
      *@param asset_name name of the asset
      *@param _account address that owns the asset
