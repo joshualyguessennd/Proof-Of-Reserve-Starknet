@@ -47,7 +47,7 @@ jobs:
      
       - name: Run tests
         run: |
-          npx hardhat test test/starknet.test.ts &
+          npx hardhat test test/starknet.test.ts
           npx hardhat test test/messaging.test.ts
           
       
