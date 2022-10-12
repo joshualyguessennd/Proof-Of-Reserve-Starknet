@@ -35,15 +35,19 @@ jobs:
           pip install starknet-devnet
           yarn
       
-      - name: Compile Cairo
+      - name: Compile Contracts
         run:
           yarn compile:l2
+          yarn compile:l1
       
       - name: Run devnet
-        run: yarn testnet:l2 &
+        run: |
+          yarn testnet:l2 &
+          yarn testnet:l1 &
      
       - name: Run tests
         run: |
-          npx hardhat test test/starknet.test.ts
+          npx hardhat test test/starknet.test.ts &
+          npx hardhat test test/messaging.test.ts
           
       
