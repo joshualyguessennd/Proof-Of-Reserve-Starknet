@@ -27,14 +27,18 @@ jobs:
         with:
           python-version: 3.9
         
-      - name: Install Dependencies  
+      - name: Install Node dependencies
+        run: |
+          yarn
+
+      - name: Install Python dependencies
         run: |
           python -m venv .venv
           source .venv/bin/activate
-          pip install cairo-lang
-          pip install starknet-devnet
-          yarn
-      
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+
       - name: Compile Contracts
         run: |        
           yarn compile:l2
