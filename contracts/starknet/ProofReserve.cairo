@@ -83,24 +83,24 @@ func post_data{
     let proposed_public_key = public_key;
     let (state) = authorized_publisher.read(public_key=proposed_public_key);
     // verify if the post has the right to post data
-    with_attr error_message("Address has no right to sign the message") {
-        assert state = TRUE;
-    }
+    // with_attr error_message("Address has no right to sign the message") {
+    //     assert state = TRUE;
+    // }
     // verify the signature of the sources
-    with_attr error_message("Signature verification failed") {
-        verify_oracle_message(
-           asset_sym,
-            asset_name,
-            address_owner,
-            balance,
-            r_low,
-            r_high,
-            s_low,
-            s_high,
-            v,
-            public_key,
-        );
-    }
+    // with_attr error_message("Signature verification failed") {
+    //     verify_oracle_message(
+    //        asset_sym,
+    //         asset_name,
+    //         address_owner,
+    //         balance,
+    //         r_low,
+    //         r_high,
+    //         s_low,
+    //         s_high,
+    //         v,
+    //         public_key,
+    //     );
+    // }
     let (root_) = calc_hash(0, 4, new(address_owner, asset_name, balance, timestamp));
     roots.write(address_owner, asset_name, balance, timestamp, root_);
     return ();
