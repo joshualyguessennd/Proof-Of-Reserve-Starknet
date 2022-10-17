@@ -1,0 +1,102 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/ethereum/Errors.sol",
+    "id": 10,
+    "exportedSymbols": {
+      "IsNotPublisher": [
+        7
+      ],
+      "NotChainlinkRegistry": [
+        9
+      ],
+      "NotKeeper": [
+        5
+      ],
+      "NotOwner": [
+        3
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:118:0",
+    "nodes": [
+      {
+        "id": 1,
+        "nodeType": "PragmaDirective",
+        "src": "32:25:0",
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 3,
+        "nodeType": "ErrorDefinition",
+        "src": "59:17:0",
+        "errorSelector": "30cd7471",
+        "name": "NotOwner",
+        "nameLocation": "65:8:0",
+        "parameters": {
+          "id": 2,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "73:2:0"
+        }
+      },
+      {
+        "id": 5,
+        "nodeType": "ErrorDefinition",
+        "src": "77:18:0",
+        "errorSelector": "f512b278",
+        "name": "NotKeeper",
+        "nameLocation": "83:9:0",
+        "parameters": {
+          "id": 4,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "92:2:0"
+        }
+      },
+      {
+        "id": 7,
+        "nodeType": "ErrorDefinition",
+        "src": "96:23:0",
+        "errorSelector": "80052ace",
+        "name": "IsNotPublisher",
+        "nameLocation": "102:14:0",
+        "parameters": {
+          "id": 6,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "116:2:0"
+        }
+      },
+      {
+        "id": 9,
+        "nodeType": "ErrorDefinition",
+        "src": "120:29:0",
+        "errorSelector": "157638d2",
+        "name": "NotChainlinkRegistry",
+        "nameLocation": "126:20:0",
+        "parameters": {
+          "id": 8,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "146:2:0"
+        }
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 0
+}

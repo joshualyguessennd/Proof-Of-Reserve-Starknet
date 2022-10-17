@@ -12,26 +12,6 @@ from starkware.cairo.common.uint256 import (
 )
 from starkware.cairo.common.cairo_secp.signature import verify_eth_signature_uint256
 
-struct OracleEntry {
-    asset_sym_little: felt,
-    asset_name_little: felt,
-    address_owner_little: felt,
-    balance_little: felt,
-    r_low: felt,
-    r_high: felt,
-    s_low: felt,
-    s_high: felt,
-    v: felt,
-    public_key: felt,
-}
-
-struct Entry {
-    key: felt,  // UTF-8 encoded lowercased string, e.g. "eth/usd"
-    value: felt,
-    timestamp: felt,
-    source: felt,
-    publisher: felt,
-}
 
 func word_reverse_endian_64{bitwise_ptr: BitwiseBuiltin*}(word: felt) -> (res: felt) {
     // A function to reverse the endianness of a 8 bytes (64 bits) integer.
@@ -58,7 +38,7 @@ func word_reverse_endian_64{bitwise_ptr: BitwiseBuiltin*}(word: felt) -> (res: f
     return (res=word / 2 ** (8 + 16 + 32));
 }
 
-func verify_oracle_message{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
+func verify_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     asset_sym_little: felt,
     asset_name_little: felt,
     address_owner_little: felt,

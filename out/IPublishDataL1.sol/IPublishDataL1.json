@@ -1,0 +1,197 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "publishData",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sendBatchTransaction",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "publishData()": "00986606",
+    "sendBatchTransaction()": "641c7659"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"publishData\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sendBatchTransaction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/ethereum/interfaces/IPublishDataL1.sol\":\"IPublishDataL1\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@chainlink/=node_modules/@chainlink/\",\":@ensdomains/=node_modules/@ensdomains/\",\":@eth-optimism/=node_modules/@eth-optimism/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/ethereum/interfaces/IPublishDataL1.sol\":{\"keccak256\":\"0x9e63102e59f019fca0a36c59692b9a1518221b90e60364e27a09a7091fe53d6d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://efc7a37d1afd0d2a33aff8b0f2ae14509403e8e2b70eaafd9b3701327cdc12ad\",\"dweb:/ipfs/QmTczJpWb9pWeygW2juxNW4hpbM7tynomXKr4BkgHJupsn\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "publishData"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "sendBatchTransaction"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@chainlink/=node_modules/@chainlink/",
+        ":@ensdomains/=node_modules/@ensdomains/",
+        ":@eth-optimism/=node_modules/@eth-optimism/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/ethereum/interfaces/IPublishDataL1.sol": "IPublishDataL1"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/ethereum/interfaces/IPublishDataL1.sol": {
+        "keccak256": "0x9e63102e59f019fca0a36c59692b9a1518221b90e60364e27a09a7091fe53d6d",
+        "urls": [
+          "bzz-raw://efc7a37d1afd0d2a33aff8b0f2ae14509403e8e2b70eaafd9b3701327cdc12ad",
+          "dweb:/ipfs/QmTczJpWb9pWeygW2juxNW4hpbM7tynomXKr4BkgHJupsn"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/ethereum/interfaces/IPublishDataL1.sol",
+    "id": 537,
+    "exportedSymbols": {
+      "IPublishDataL1": [
+        536
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:140:3",
+    "nodes": [
+      {
+        "id": 529,
+        "nodeType": "PragmaDirective",
+        "src": "32:25:3",
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 536,
+        "nodeType": "ContractDefinition",
+        "src": "59:112:3",
+        "nodes": [
+          {
+            "id": 532,
+            "nodeType": "FunctionDefinition",
+            "src": "90:32:3",
+            "functionSelector": "00986606",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "publishData",
+            "nameLocation": "99:11:3",
+            "parameters": {
+              "id": 530,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "110:2:3"
+            },
+            "returnParameters": {
+              "id": 531,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "121:0:3"
+            },
+            "scope": 536,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 535,
+            "nodeType": "FunctionDefinition",
+            "src": "128:41:3",
+            "functionSelector": "641c7659",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "sendBatchTransaction",
+            "nameLocation": "137:20:3",
+            "parameters": {
+              "id": 533,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "157:2:3"
+            },
+            "returnParameters": {
+              "id": 534,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "168:0:3"
+            },
+            "scope": 536,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IPublishDataL1",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          536
+        ],
+        "name": "IPublishDataL1",
+        "nameLocation": "69:14:3",
+        "scope": 537,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 3
+}

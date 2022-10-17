@@ -8,6 +8,14 @@ import { Account } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { getSelectorFromName } from "starknet/dist/utils/hash";
 
+const ASSET_SYMBOL = 10703902247957299200;
+const ASSET_NAME = 4627187504670310400;
+const ADDRESS_ACCOUNT = "0x0000000000000000000000000300000000000000";
+const BALANCE = 4412482;
+const R = "0x0afe995879eb87f737664646c786c2c7fa5e0702bf50260074355e21ac2d365a";
+const S = "0x000c65760f5886d4947a60caa12e6db8e43b11a7b063541dcc5e938cdd687ea3";
+const V = 0;
+
 describe("test contracts interaction", function () {
     let l1Contract: Contract;
     let l2Contract: StarknetContract;
@@ -38,7 +46,7 @@ describe("test contracts interaction", function () {
 
         l2Contract = await l2ContractFactory.deploy({ admin: l2user.starknetContract.address, publisher: BigInt(761466874539515783303110363281120649054760260892n) });
 
-        l1ContractFactory = await ethers.getContractFactory("L1_CONTRACT", admin);
+        l1ContractFactory = await ethers.getContractFactory("PublishDataL1", admin);
         selector = getSelectorFromName("post_data")
         l1Contract = await l1ContractFactory.deploy(
             mockStarknetMessagingAddress,
@@ -67,31 +75,23 @@ describe("test contracts interaction", function () {
         await l1Contract.connect(admin).addNewPublisher(admin.address);
         // expect it to fail  with is Not Signer
         expect(l1Contract.connect(l1_user).publishData(
-            BigInt(10703902247957299200n),
-            BigInt(4627187504670310400n),
-            "0x0000000000000000000000000300000000000000",
-            BigInt(4412482n),
-            // r 
-            // BigInt(4972965992792418342039714693645413618535966722652354834878857075697447155290n),
-            "0x0afe995879eb87f737664646c786c2c7fa5e0702bf50260074355e21ac2d365a",
-            // s
-            // BigInt(21902424048175322046620124405489474242415230961420388732556387699816693411n),
-            "0x000c65760f5886d4947a60caa12e6db8e43b11a7b063541dcc5e938cdd687ea3",
-            0
+            BigInt(ASSET_SYMBOL),
+            BigInt(ASSET_NAME),
+            ADDRESS_ACCOUNT,
+            BigInt(BALANCE),
+            R,
+            S,
+            V
         )).to.rejected;
 
         await l1Contract.connect(admin).publishData(
-            BigInt(10703902247957299200n),
-            BigInt(4627187504670310400n),
-            "0x0000000000000000000000000300000000000000",
-            BigInt(4412482n),
-            // r 
-            // BigInt(4972965992792418342039714693645413618535966722652354834878857075697447155290n),
-            "0x0afe995879eb87f737664646c786c2c7fa5e0702bf50260074355e21ac2d365a",
-            // s
-            // BigInt(21902424048175322046620124405489474242415230961420388732556387699816693411n),
-            "0x000c65760f5886d4947a60caa12e6db8e43b11a7b063541dcc5e938cdd687ea3",
-            0
+            BigInt(ASSET_SYMBOL),
+            BigInt(ASSET_NAME),
+            ADDRESS_ACCOUNT,
+            BigInt(BALANCE),
+            R,
+            S,
+            V
         )
 
         await l1Contract.connect(admin).addNewKeeper(admin.address);

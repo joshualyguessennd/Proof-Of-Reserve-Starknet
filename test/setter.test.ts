@@ -21,25 +21,17 @@ describe("Setter", function () {
         console.log("l2 contract is: ", l2Contract.address);
         console.log("l1 contract is:", l1Contract.address);
         // const tx_test = await l1Contract.getCancellationDelay();
-        const tx = await l1Contract.connect(admin).set(admin.address, 2);
-        // const flushL1Response = await starknet.devnet.flush();
-        // const receipt = await tx.wait();
-
-        // const loggedEvent = receipt.events.filter(
-        //     (x: any) => x.event == "LogMessageToL2"
-        // );
-
-        // const flushL1Response = await starknet.devnet.flush();
-        // await starknet.devnet.flush();
-        // console.log(tx);
-        // const data = await l2Contract.call("read_x", {})
-        // console.log(data)
-
-        // const flushL1Messages = flushL1Response.consumed_messages.from_l1;
-        // expect(flushL1Response.consumed_messages.from_l2).to.be.empty;
-        // expect(flushL1Messages).to.have.a.lengthOf(1);
-        // const counter = await l2Contract.call("get_counter", {});
-        // console.log(counter.res);
+        const tx = await l1Contract.connect(admin).set(2n);
+        console.log("tx", tx);
+        const flushL1Response = await starknet.devnet.flush();
+        console.log(flushL1Response)
+        const data = await l2Contract.call("read_x", {})
+        console.log(data)
+        const flushL1Messages = flushL1Response.consumed_messages.from_l1;
+        expect(flushL1Response.consumed_messages.from_l2).to.be.empty;
+        expect(flushL1Messages).to.have.a.lengthOf(1);
+        const counter = await l2Contract.call("get_counter", {});
+        console.log(counter.res);
     });
 });
 
