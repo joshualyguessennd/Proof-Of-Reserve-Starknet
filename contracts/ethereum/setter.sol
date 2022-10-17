@@ -14,23 +14,14 @@ contract Setter {
         l2Contract = _l2Contract;
     }
 
-    function set(uint256 _x) public returns (bool) {
+    function set(uint256 _x) public {
         uint256[] memory payload = new uint256[](1);
         payload[0] = _x;
 
-        // IStarknetMessaging(starkNet).sendMessageToL2(
-        //     l2Contract,
-        //     PUBLISH_SELECTOR,
-        //     payload
-        // );
-        (bool success, bytes memory data) = starkNet.call(
-            abi.encodeWithSignature(
-                "sendMessageToL2(uint256, uint256, uint256[])",
-                l2Contract,
-                PUBLISH_SELECTOR,
-                payload
-            )
+        IStarknetMessaging(starkNet).sendMessageToL2(
+            l2Contract,
+            PUBLISH_SELECTOR,
+            payload
         );
-        return success;
     }
 }

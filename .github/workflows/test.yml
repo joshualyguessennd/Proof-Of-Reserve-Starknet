@@ -6,7 +6,8 @@ on:
       - main
   pull_request:
 
-
+env:
+  OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
 
 jobs:
   test:
@@ -14,19 +15,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
           cache: "yarn"
-          cache-dependency-path: 'yarn.lock'
-      
+          cache-dependency-path: "yarn.lock"
+
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
           python-version: 3.9
-        
+
       - name: Install Node dependencies
         run: |
           yarn
@@ -40,18 +41,16 @@ jobs:
           poetry install
 
       - name: Compile Contracts
-        run: |        
+        run: |
           yarn compile:l2
           yarn compile:l1
-      
+
       - name: Run devnet
         run: |
           yarn testnet:l2 &
           yarn testnet:l1 &
-     
+
       - name: Run tests
         run: |
           npx hardhat test test/messaging.test.ts
           npx hardhat test test/verify_signature.test.ts
-          
-      
