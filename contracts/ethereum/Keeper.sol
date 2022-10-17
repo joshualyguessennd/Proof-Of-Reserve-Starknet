@@ -39,9 +39,9 @@ contract Keeper {
     }
 
     function performUpkeep(bytes calldata performData) external {
-        address l1_contract = abi.decode(performData, (address));
+        address l1Contract = abi.decode(performData, (address));
         lastTimeStamp = block.timestamp;
-        IPublishDataL1(l1_contract).sendBatchTransaction();
+        IPublishDataL1(l1Contract).sendBatchTransaction();
     }
 
     modifier onlyOwner() {
