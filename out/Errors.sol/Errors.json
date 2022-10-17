@@ -9,29 +9,29 @@
     "linkReferences": {}
   },
   "ast": {
-    "absolutePath": "contracts/ethereum/Errors.sol",
-    "id": 10,
+    "absolutePath": "contracts/ethereum/errors.sol",
+    "id": 528,
     "exportedSymbols": {
       "IsNotPublisher": [
-        7
+        525
       ],
       "NotChainlinkRegistry": [
-        9
+        527
       ],
       "NotKeeper": [
-        5
+        523
       ],
       "NotOwner": [
-        3
+        521
       ]
     },
     "nodeType": "SourceUnit",
-    "src": "32:118:0",
+    "src": "32:118:2",
     "nodes": [
       {
-        "id": 1,
+        "id": 519,
         "nodeType": "PragmaDirective",
-        "src": "32:25:0",
+        "src": "32:25:2",
         "literals": [
           "solidity",
           ">=",
@@ -40,63 +40,63 @@
         ]
       },
       {
-        "id": 3,
+        "id": 521,
         "nodeType": "ErrorDefinition",
-        "src": "59:17:0",
+        "src": "59:17:2",
         "errorSelector": "30cd7471",
         "name": "NotOwner",
-        "nameLocation": "65:8:0",
+        "nameLocation": "65:8:2",
         "parameters": {
-          "id": 2,
+          "id": 520,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "73:2:0"
+          "src": "73:2:2"
         }
       },
       {
-        "id": 5,
+        "id": 523,
         "nodeType": "ErrorDefinition",
-        "src": "77:18:0",
+        "src": "77:18:2",
         "errorSelector": "f512b278",
         "name": "NotKeeper",
-        "nameLocation": "83:9:0",
+        "nameLocation": "83:9:2",
         "parameters": {
-          "id": 4,
+          "id": 522,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "92:2:0"
+          "src": "92:2:2"
         }
       },
       {
-        "id": 7,
+        "id": 525,
         "nodeType": "ErrorDefinition",
-        "src": "96:23:0",
+        "src": "96:23:2",
         "errorSelector": "80052ace",
         "name": "IsNotPublisher",
-        "nameLocation": "102:14:0",
+        "nameLocation": "102:14:2",
         "parameters": {
-          "id": 6,
+          "id": 524,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "116:2:0"
+          "src": "116:2:2"
         }
       },
       {
-        "id": 9,
+        "id": 527,
         "nodeType": "ErrorDefinition",
-        "src": "120:29:0",
+        "src": "120:29:2",
         "errorSelector": "157638d2",
         "name": "NotChainlinkRegistry",
-        "nameLocation": "126:20:0",
+        "nameLocation": "126:20:2",
         "parameters": {
-          "id": 8,
+          "id": 526,
           "nodeType": "ParameterList",
           "parameters": [],
-          "src": "146:2:0"
+          "src": "146:2:2"
         }
       }
     ],
     "license": "MIT"
   },
-  "id": 0
+  "id": 2
 }
