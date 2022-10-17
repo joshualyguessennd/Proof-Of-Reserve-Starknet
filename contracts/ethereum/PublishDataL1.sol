@@ -2,7 +2,7 @@
 pragma solidity >=0.8.15;
 
 import "./interfaces/Interface.sol";
-import "./Errors.sol";
+import "./errors.sol";
 
 contract PublishDataL1 {
     address public starkNet;

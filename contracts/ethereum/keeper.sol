@@ -2,7 +2,7 @@
 pragma solidity >=0.8.15;
 
 import "./interfaces/IPublishDataL1.sol";
-import "./Errors.sol";
+import "./errors.sol";
 
 contract Keeper {
     address public registryContract;
