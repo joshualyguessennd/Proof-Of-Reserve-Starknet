@@ -5,7 +5,7 @@ description = ""
 authors = ["Josue"]
 
 [tool.poetry.dependencies]
-python = "3.9.14"
+python = "3.9.15"
 fastecdsa = "2.2.3"
 cairo-lang = "0.10.0"
 starknet-devnet = "^0.3.3"
