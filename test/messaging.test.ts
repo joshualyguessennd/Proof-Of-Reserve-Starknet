@@ -7,11 +7,12 @@ import { Account } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { getSelectorFromName } from "starknet/dist/utils/hash";
 
-const ASSET_SYMBOL = 10703902247957299200;
-const ASSET_NAME = 4627187504670310400;
+const ASSET_SYMBOL = 10703902247957299200n;
+const ASSET_NAME = 4627187504670310400n;
 const ADDRESS_ACCOUNT = "0x0000000000000000000000000300000000000000";
-const BALANCE = 4412482;
-const R = "0x0afe995879eb87f737664646c786c2c7fa5e0702bf50260074355e21ac2d365a";
+const BALANCE = 4412482n;
+const PUBLIC_KEY = 761466874539515783303110363281120649054760260892n
+const R = "0x6df1fd74c3334fa829febec3cb439bc8fa5e0702bf50260074355e21ac2d365a";
 const S = "0x000c65760f5886d4947a60caa12e6db8e43b11a7b063541dcc5e938cdd687ea3";
 const V = 0;
 
@@ -88,6 +89,14 @@ describe("test contracts interaction", function () {
         )
     ).to.rejected;
 
+    console.log(l1Contract.address);
+
+
+    // add l1 contract as publisher
+    await l2user.invoke(l2Contract, "add_publisher", {
+      new_publisher: l1Contract.address,
+    });
+
     await l1Contract
       .connect(admin)
       .publishData(
@@ -95,6 +104,7 @@ describe("test contracts interaction", function () {
         BigInt(ASSET_NAME),
         ADDRESS_ACCOUNT,
         BigInt(BALANCE),
+        BigInt(PUBLIC_KEY),
         R,
         S,
         V
@@ -104,10 +114,47 @@ describe("test contracts interaction", function () {
 
     await l1Contract.connect(admin).sendBatchTransaction();
 
-    // error with the messaging contract
+    // flush message to l2
     const flushL1Response = await starknet.devnet.flush();
     const flushL1Messages = flushL1Response.consumed_messages.from_l1;
+    // check assertion
     expect(flushL1Response.consumed_messages.from_l2).to.be.empty;
-    expect(flushL1Messages).to.have.a.lengthOf(1);
+    expect(flushL1Messages).to.have.a.lengthOf(2);
+
+    expectAddressEquality(flushL1Messages[0].args.from_address, l1Contract.address);
+    expectAddressEquality(
+      flushL1Messages[0].address,
+      mockStarknetMessagingAddress
+    );
+    // // verify root hash
+    const timestamp = BigInt(flushL1Messages[0].args.payload[4]);
+    const address_account_felt = BigInt(flushL1Messages[0].args.payload[2]);
+
+    let root = await l2Contract.call("get_root", {
+      public_key: address_account_felt,
+      asset: BigInt(ASSET_NAME),
+      balance: BigInt(BALANCE),
+      timestamp: timestamp,
+    });
+    let result = await l2Contract.call("verify_balance", {
+      leaf: 0,
+      merkle_root: root.res,
+      proof: [
+        address_account_felt,
+        BigInt(ASSET_NAME),
+        BigInt(BALANCE),
+        timestamp,
+      ],
+    });
+
+    expect(BigInt(1)).to.be.eq(result.res);
   });
 });
+
+function expectAddressEquality(actual: string, expected: string) {
+  expect(adaptAddress(actual)).to.equal(adaptAddress(expected));
+}
+
+function adaptAddress(address: string) {
+  return "0x" + BigInt(address).toString(16);
+}
