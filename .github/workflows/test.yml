@@ -51,4 +51,5 @@ jobs:
       - name: Run tests
         run: |
           npx hardhat test test/messaging.test.ts --network l1_testnet --starknet-network l2_testnet
+          npx hardhat test test/setter.test.ts --network l1_testnet --starknet-network l2_testnet
           npx hardhat test test/verify_signature.test.ts

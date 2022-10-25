@@ -6,15 +6,8 @@ import { Contract, ContractFactory } from "ethers";
 import { Account } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { getSelectorFromName } from "starknet/dist/utils/hash";
+import { CONST_OBJECT } from "./constants";
 
-const ASSET_SYMBOL = 10703902247957299200n;
-const ASSET_NAME = 4627187504670310400n;
-const ADDRESS_ACCOUNT = "0x0000000000000000000000000300000000000000";
-const BALANCE = 4412482n;
-const PUBLIC_KEY = 761466874539515783303110363281120649054760260892n
-const R = "0x6df1fd74c3334fa829febec3cb439bc8fa5e0702bf50260074355e21ac2d365a";
-const S = "0x000c65760f5886d4947a60caa12e6db8e43b11a7b063541dcc5e938cdd687ea3";
-const V = 0;
 
 describe("test contracts interaction", function () {
   let l1Contract: Contract;
@@ -79,13 +72,14 @@ describe("test contracts interaction", function () {
       l1Contract
         .connect(l1_user)
         .publishData(
-          BigInt(ASSET_SYMBOL),
-          BigInt(ASSET_NAME),
-          ADDRESS_ACCOUNT,
-          BigInt(BALANCE),
-          R,
-          S,
-          V
+          BigInt(CONST_OBJECT.ASSET_SYMBOL),
+          BigInt(CONST_OBJECT.ASSET_NAME),
+          CONST_OBJECT.ADDRESS_ACCOUNT,
+          BigInt(CONST_OBJECT.BALANCE),
+          BigInt(CONST_OBJECT.PUBLIC_KEY),
+          CONST_OBJECT.R,
+          CONST_OBJECT.S,
+          CONST_OBJECT.V
         )
     ).to.rejected;
 
@@ -100,14 +94,14 @@ describe("test contracts interaction", function () {
     await l1Contract
       .connect(admin)
       .publishData(
-        BigInt(ASSET_SYMBOL),
-        BigInt(ASSET_NAME),
-        ADDRESS_ACCOUNT,
-        BigInt(BALANCE),
-        BigInt(PUBLIC_KEY),
-        R,
-        S,
-        V
+        BigInt(CONST_OBJECT.ASSET_SYMBOL),
+        BigInt(CONST_OBJECT.ASSET_NAME),
+        CONST_OBJECT.ADDRESS_ACCOUNT,
+        BigInt(CONST_OBJECT.BALANCE),
+        BigInt(CONST_OBJECT.PUBLIC_KEY),
+        CONST_OBJECT.R,
+        CONST_OBJECT.S,
+        CONST_OBJECT.V
       );
 
     await l1Contract.connect(admin).addNewKeeper(admin.address);
@@ -132,8 +126,8 @@ describe("test contracts interaction", function () {
 
     let root = await l2Contract.call("get_root", {
       public_key: address_account_felt,
-      asset: BigInt(ASSET_NAME),
-      balance: BigInt(BALANCE),
+      asset: BigInt(CONST_OBJECT.ASSET_NAME),
+      balance: BigInt(CONST_OBJECT.BALANCE),
       timestamp: timestamp,
     });
     let result = await l2Contract.call("verify_balance", {
@@ -141,8 +135,8 @@ describe("test contracts interaction", function () {
       merkle_root: root.res,
       proof: [
         address_account_felt,
-        BigInt(ASSET_NAME),
-        BigInt(BALANCE),
+        BigInt(CONST_OBJECT.ASSET_NAME),
+        BigInt(CONST_OBJECT.BALANCE),
         timestamp,
       ],
     });

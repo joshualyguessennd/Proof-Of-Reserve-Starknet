@@ -2,20 +2,8 @@ import chai, { expect } from "chai";
 import hre, { ethers, starknet } from "hardhat";
 import { StarknetContract, HardhatUserConfig } from "hardhat/types";
 import config from "../hardhat.config";
+import { CONST_OBJECT } from "./constants";
 
-const ASSET_SYMBOL = 10703902247957299200n;
-const ASSET_NAME = 4627187504670310400n;
-const ADDRESS_ACCOUNT = 216172782113783808n;
-const BALANCE = 4412482n;
-const TIMESTAMP = 122344n;
-const R_LOW = 332795217045463323013001404630688413274n;
-const R_HIGH = 146142335783970907433265090013769735112n;
-const S_LOW = 303370686640270218425857983888853860003n;
-const S_HIGH = 64365439344860771410702511821974968n;
-const V = 0;
-const PUBLIC_KEY = 761466874539515783303110363281120649054760260892n;
-const WRONG_TIMESTAMP = 4412482000030n;
-const FAKE_PUBLISHER = 761466874539n;
 
 describe("test starknet contract", function () {
     let l2Contract: any;
@@ -30,7 +18,7 @@ describe("test starknet contract", function () {
         );
         l2Contract = await l2ContractFactory.deploy({
             admin: l2user.starknetContract.address,
-            publisher: BigInt(PUBLIC_KEY),
+            publisher: BigInt(CONST_OBJECT.PUBLIC_KEY),
         });
     });
 
@@ -38,11 +26,11 @@ describe("test starknet contract", function () {
         const address_owner = await l2Contract.call("get_admin");
         expect(BigInt(l2user.address)).to.be.eq(address_owner.admin);
         const isPublisher = await l2Contract.call("is_publisher", {
-            address: BigInt(PUBLIC_KEY),
+            address: BigInt(CONST_OBJECT.PUBLIC_KEY),
         });
         expect(BigInt(1)).to.be.eq(isPublisher.res);
         const isNotPublisher = await l2Contract.call("is_publisher", {
-            address: BigInt(FAKE_PUBLISHER),
+            address: BigInt(CONST_OBJECT.FAKE_PUBLISHER),
         });
         expect(BigInt(0)).to.be.eq(isNotPublisher.res);
     });
@@ -94,27 +82,27 @@ describe("test starknet contract", function () {
                 s_low: 0,
                 s_high: 0,
                 v: 0,
-                public_key: BigInt(PUBLIC_KEY),
+                public_key: BigInt(CONST_OBJECT.PUBLIC_KEY),
             })
         ).to.rejected;
         await l2user1.invoke(l2Contract, "post_data_l2", {
-            asset_sym: BigInt(ASSET_SYMBOL),
-            asset_name: BigInt(ASSET_NAME),
-            address_owner: BigInt(ADDRESS_ACCOUNT),
-            timestamp: BigInt(TIMESTAMP),
-            balance: BigInt(BALANCE),
-            r_low: BigInt(R_LOW),
-            r_high: BigInt(R_HIGH),
-            s_low: BigInt(S_LOW),
-            s_high: BigInt(S_HIGH),
-            v: V,
-            public_key: BigInt(PUBLIC_KEY),
+            asset_sym: BigInt(CONST_OBJECT.ASSET_SYMBOL),
+            asset_name: BigInt(CONST_OBJECT.ASSET_NAME),
+            address_owner: BigInt(CONST_OBJECT.ADDRESS_ACCOUNT_INT),
+            timestamp: BigInt(CONST_OBJECT.TIMESTAMP),
+            balance: BigInt(CONST_OBJECT.BALANCE),
+            r_low: BigInt(CONST_OBJECT.R_LOW),
+            r_high: BigInt(CONST_OBJECT.R_HIGH),
+            s_low: BigInt(CONST_OBJECT.S_LOW),
+            s_high: BigInt(CONST_OBJECT.S_HIGH),
+            v: CONST_OBJECT.V,
+            public_key: BigInt(CONST_OBJECT.PUBLIC_KEY),
         });
         let root = await l2Contract.call("get_root", {
-            public_key: BigInt(ADDRESS_ACCOUNT),
-            asset: BigInt(ASSET_NAME),
-            balance: BigInt(BALANCE),
-            timestamp: BigInt(TIMESTAMP),
+            public_key: BigInt(CONST_OBJECT.ADDRESS_ACCOUNT_INT),
+            asset: BigInt(CONST_OBJECT.ASSET_NAME),
+            balance: BigInt(CONST_OBJECT.BALANCE),
+            timestamp: BigInt(CONST_OBJECT.TIMESTAMP),
         });
         console.log("the root is", root.res);
         // verify root
@@ -122,10 +110,10 @@ describe("test starknet contract", function () {
             leaf: 0,
             merkle_root: root.res,
             proof: [
-                BigInt(ADDRESS_ACCOUNT),
-                BigInt(ASSET_NAME),
-                BigInt(BALANCE),
-                BigInt(TIMESTAMP),
+                BigInt(CONST_OBJECT.ADDRESS_ACCOUNT_INT),
+                BigInt(CONST_OBJECT.ASSET_NAME),
+                BigInt(CONST_OBJECT.BALANCE),
+                BigInt(CONST_OBJECT.TIMESTAMP),
             ],
         });
         // verify the root is valid
@@ -135,10 +123,10 @@ describe("test starknet contract", function () {
             leaf: 0,
             merkle_root: root.res,
             proof: [
-                BigInt(ADDRESS_ACCOUNT),
-                BigInt(ASSET_NAME),
-                BigInt(WRONG_TIMESTAMP),
-                BigInt(TIMESTAMP),
+                BigInt(CONST_OBJECT.ADDRESS_ACCOUNT_INT),
+                BigInt(CONST_OBJECT.ASSET_NAME),
+                BigInt(CONST_OBJECT.WRONG_TIMESTAMP),
+                BigInt(CONST_OBJECT.TIMESTAMP),
             ],
         });
         expect(BigInt(0)).to.be.eq(result_1.res);

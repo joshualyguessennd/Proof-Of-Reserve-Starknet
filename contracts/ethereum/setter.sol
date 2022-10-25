@@ -6,12 +6,16 @@ import "./interfaces/Interface.sol";
 contract Setter {
     address public starkNet;
     uint256 public l2Contract;
-    uint256 PUBLISH_SELECTOR =
-        1140936987664331448615618258224699152095025896606603785909108379971040460607;
+    uint256 PUBLISH_SELECTOR;
 
-    constructor(uint256 _l2Contract, address _starknet) {
+    constructor(
+        uint256 _l2Contract,
+        address _starknet,
+        uint256 selector
+    ) {
         starkNet = _starknet;
         l2Contract = _l2Contract;
+        PUBLISH_SELECTOR = selector;
     }
 
     function set(uint256 _x) public {
