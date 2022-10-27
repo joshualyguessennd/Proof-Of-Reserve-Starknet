@@ -12,3 +12,4 @@ artifacts
 .venv/
 package-lock.json
 poetry.lock
+out

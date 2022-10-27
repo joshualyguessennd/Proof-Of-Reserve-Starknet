@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.15;
 
-import "./interfaces/IL1_Contract.sol";
+import "./interfaces/IPublishDataL1.sol";
 import "./errors.sol";
 
 contract Keeper {
@@ -39,9 +39,9 @@ contract Keeper {
     }
 
     function performUpkeep(bytes calldata performData) external {
-        address l1_contract = abi.decode(performData, (address));
+        address l1Contract = abi.decode(performData, (address));
         lastTimeStamp = block.timestamp;
-        IL1_Contract(l1_contract).sendBatchTransaction();
+        IPublishDataL1(l1Contract).sendBatchTransaction();
     }
 
     modifier onlyOwner() {

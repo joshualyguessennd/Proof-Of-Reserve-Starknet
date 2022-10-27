@@ -6,7 +6,7 @@ from starkware.starknet.common.syscalls import get_caller_address, get_block_tim
 from starkware.cairo.common.math import assert_not_equal
 from starkware.cairo.common.bool import TRUE, FALSE
 from starkware.cairo.common.hash import hash2
-from starknet.Library import verify_oracle_message, word_reverse_endian_64, OracleEntry, Entry
+from starknet.signature_verification import verify_signature, word_reverse_endian_64
 from starkware.cairo.common.math_cmp import is_le_felt
 
 @storage_var
@@ -43,7 +43,6 @@ func constructor{
 @view
 func get_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 )->(admin: felt) {
-
     let (admin) = contract_admin.read();
     return(admin=admin);
 }
@@ -68,7 +67,9 @@ func add_publisher{
 @l1_handler
 func post_data{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}(from_address: felt, asset_sym: felt,
+}(
+    from_address: felt, 
+    asset_sym: felt,
     asset_name: felt,
     address_owner: felt,
     balance: felt,
@@ -78,17 +79,18 @@ func post_data{
     s_low: felt,
     s_high: felt,
     v: felt,
-    public_key: felt) {
+    public_key: felt
+) {
     alloc_locals;
     let proposed_public_key = public_key;
     let (state) = authorized_publisher.read(public_key=proposed_public_key);
-    // verify if the post has the right to post data
+    // // verify if the post has the right to post data
     with_attr error_message("Address has no right to sign the message") {
         assert state = TRUE;
     }
-    // verify the signature of the sources
+    // // verify the signature of the sources
     with_attr error_message("Signature verification failed") {
-        verify_oracle_message(
+        verify_signature(
            asset_sym,
             asset_name,
             address_owner,
@@ -109,7 +111,8 @@ func post_data{
 @external
 func post_data_l2{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}(  asset_sym: felt,
+}(  
+    asset_sym: felt,
     asset_name: felt,
     address_owner: felt,
     balance: felt,
@@ -119,7 +122,8 @@ func post_data_l2{
     s_low: felt,
     s_high: felt,
     v: felt,
-    public_key: felt){
+    public_key: felt
+){
     alloc_locals;
     let proposed_public_key = public_key;
     let (state) = authorized_publisher.read(public_key=proposed_public_key);
@@ -129,7 +133,7 @@ func post_data_l2{
     }
     // verify the signature of the sources
     with_attr error_message("Signature verification failed") {
-        verify_oracle_message(
+        verify_signature(
             asset_sym,
             asset_name,
             address_owner,
@@ -178,7 +182,6 @@ func calc_hash{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     if (proof_len == 0) {
         return (res=curr);
     }
-
     local node;
     local proof_element = [proof];
     let le = is_le_felt(curr, proof_element);

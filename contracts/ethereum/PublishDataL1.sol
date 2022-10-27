@@ -4,7 +4,7 @@ pragma solidity >=0.8.15;
 import "./interfaces/Interface.sol";
 import "./errors.sol";
 
-contract L1_CONTRACT {
+contract PublishDataL1 {
     address public starkNet;
     address public owner;
     address public keeper;
@@ -54,9 +54,19 @@ contract L1_CONTRACT {
     }
 
     /**
+    @dev add a new publisher address
+    @param _keeper new address allows to post data 
+    */
+    function addNewKeeper(address _keeper) external onlyOwner {
+        keeper = _keeper;
+    }
+
+    /**
      *@param asset_symbol symbol of asset
      *@param asset_name name of the asset
      *@param _account address that owns the asset
+     *@param public_key address public_key , this only works for the poc,
+     *dev can adapt, remove by generating new signature with own address to test the contract
      *@param account_balance amount of asset address owns
      */
     function publishData(
@@ -64,6 +74,7 @@ contract L1_CONTRACT {
         uint256 asset_name,
         address _account,
         uint256 account_balance,
+        uint256 public_key,
         bytes32 r,
         bytes32 s,
         uint8 v
@@ -87,7 +98,8 @@ contract L1_CONTRACT {
         (payload[7], payload[8]) = toSplitUint(_s);
         // v
         payload[9] = v;
-        payload[10] = uint256(uint160(address(msg.sender)));
+        // payload[10] = uint256(uint160(address(address(this))));
+        payload[10] = public_key;
         // store the data for the next round
         data[msg.sender] = DataInfo(msg.sender, payload);
     }

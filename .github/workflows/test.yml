@@ -6,7 +6,8 @@ on:
       - main
   pull_request:
 
-
+env:
+  OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
 
 jobs:
   test:
@@ -14,36 +15,41 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Use Node.js
         uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: "yarn"
-          cache-dependency-path: 'yarn.lock'
-      
+
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
           python-version: 3.9
-        
-      - name: Install Dependencies  
+
+      - name: Install Node dependencies
+        run: |
+          yarn cache clean
+          yarn
+
+      - name: Install Python dependencies
         run: |
           python -m venv .venv
           source .venv/bin/activate
-          pip install cairo-lang
-          pip install starknet-devnet
-          yarn
-      
-      - name: Compile Cairo
-        run:
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry cache clear . --all
+          poetry install
+
+      - name: Compile Contracts
+        run: |
           yarn compile:l2
-      
+          yarn compile:l1
+
       - name: Run devnet
-        run: yarn testnet:l2 &
-     
+        run: |
+          yarn testnet:l2 &
+          yarn testnet:l1 &
+
       - name: Run tests
         run: |
-          npx hardhat test test/starknet.test.ts
-          
-      
+          npx hardhat test test/messaging.test.ts --network l1_testnet --starknet-network l2_testnet
+          npx hardhat test test/setter.test.ts --network l1_testnet --starknet-network l2_testnet
+          npx hardhat test test/verify_signature.test.ts
