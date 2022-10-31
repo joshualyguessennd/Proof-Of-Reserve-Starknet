@@ -1,5 +1,8 @@
 # Proof of Reserve
 
+### Todo
+- [ ] governance system
+
 # Introduction
 
 With the massive adoption of crypto and activity generally related to the financial market (trading, lending, swapping, borrowing) users are eager to know if the assets they have on the platforms are not just numbers without values. Proof of Reserve comes with the ambition to allow transparency since point-in-time attestation can be manipulated and cash flow analysis . PoR allows users to conduct audit digital assets reserves while custodians (exchange, DeFi protocol) gain the trust of users
