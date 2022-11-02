@@ -9,12 +9,22 @@ from starkware.cairo.common.hash import hash2
 from starknet.signature_verification import verify_signature, word_reverse_endian_64
 from starkware.cairo.common.math_cmp import is_le_felt
 
+struct Round {
+    publisher: felt,
+    reserves: felt,
+    timestamp: felt,
+}
+
 @storage_var
 func contract_admin() -> (res: felt) {
 }
 
 @storage_var
-func roots(public_key: felt, asset: felt, balance: felt, timestamp: felt) -> (res: felt) {
+func reserves_rounds(asset: felt, id: felt) -> (data: Round ) {
+}
+
+@storage_var
+func supplies_rounds(asset: felt, id: felt) -> (data: Round ) {
 }
 
 @storage_var
@@ -69,10 +79,8 @@ func post_data{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
 }(
     from_address: felt, 
-    asset_sym: felt,
-    asset_name: felt,
-    address_owner: felt,
-    balance: felt,
+    asset:felt,
+    reserves:felt,
     timestamp: felt,
     r_low: felt,
     r_high: felt,
@@ -91,10 +99,8 @@ func post_data{
     // // verify the signature of the sources
     with_attr error_message("Signature verification failed") {
         verify_signature(
-           asset_sym,
-            asset_name,
-            address_owner,
-            balance,
+           asset,
+            reserves,
             r_low,
             r_high,
             s_low,
@@ -103,19 +109,18 @@ func post_data{
             public_key,
         );
     }
-    let (root_) = calc_hash(0, 4, new(address_owner, asset_name, balance, timestamp));
-    roots.write(address_owner, asset_name, balance, timestamp, root_);
-    return ();
+    let round = Round(public_key ,reserves, timestamp);
+ 
+    reserves_rounds.write(asset, 1, round);
+    return (); 
 }
 
 @external
-func post_data_l2{
+func publish_l2_supply{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
 }(  
-    asset_sym: felt,
-    asset_name: felt,
-    address_owner: felt,
-    balance: felt,
+    asset:felt,
+    supply: felt,
     timestamp: felt,
     r_low: felt,
     r_high: felt,
@@ -134,10 +139,8 @@ func post_data_l2{
     // verify the signature of the sources
     with_attr error_message("Signature verification failed") {
         verify_signature(
-            asset_sym,
-            asset_name,
-            address_owner,
-            balance,
+            asset,
+            supply,
             r_low,
             r_high,
             s_low,
@@ -146,60 +149,39 @@ func post_data_l2{
             public_key,
         );
     }
-    let (root_) = calc_hash(0, 4, new(address_owner, asset_name, balance, timestamp));
-    roots.write(address_owner, asset_name, balance, timestamp, root_);
+   
+   let round = Round(public_key ,supply, timestamp);
+    supplies_rounds.write(asset, 1, round);
     
     return ();
 }
 
-// user call this function to verify if a address had this balance
+// gets the latest reserves round published from l1
 @view
-func verify_balance{
+func get_latest_reserves{
         syscall_ptr : felt*, 
         pedersen_ptr : HashBuiltin*, 
-        range_check_ptr,
-        ecdsa_ptr : SignatureBuiltin*
+        range_check_ptr
 }(
-    leaf: felt, merkle_root: felt, proof_len: felt, proof: felt*
-) -> (res:felt){
-    alloc_locals;
-    // calculate root
-    let (root) = calc_hash(leaf, proof_len, proof);
-    // check if the root is stored
-    if(root==merkle_root){
-        return (res=1);
-    }
-    return (res=0);
+    asset: felt
+) -> (data: Round){
+   
+    return reserves_rounds.read(asset, 1);
 }
 
-// generate hash
-func calc_hash{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    curr: felt, 
-    proof_len: felt,
-    proof: felt*
-) -> (res: felt){
-    alloc_locals;
-    if (proof_len == 0) {
-        return (res=curr);
-    }
-    local node;
-    local proof_element = [proof];
-    let le = is_le_felt(curr, proof_element);
-    if (le==1){
-        let (n) = hash2{hash_ptr=pedersen_ptr}(curr, proof_element);
-        node = n;
-    } else {
-        let (n) = hash2{hash_ptr=pedersen_ptr}(proof_element, curr);
-        node = n;
-    }
-    let (res) = calc_hash(node, proof_len-1, proof+1); 
-    return (res=res);
-}
-
-// help function to get the exact hash stored by a publisher
+// gets the latest asset supply on l2
 @view
-func get_root{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(public_key: felt, asset: felt, balance: felt, timestamp: felt) -> (res: felt) {
-    alloc_locals;
-    let (res) = roots.read(public_key, asset, balance, timestamp);
-    return (res=res);
+func get_latest_supply{
+        syscall_ptr : felt*, 
+        pedersen_ptr : HashBuiltin*, 
+        range_check_ptr
+}(
+    asset: felt
+) -> (data: Round){
+
+ return supplies_rounds.read(asset, 1);
+
 }
+
+
+

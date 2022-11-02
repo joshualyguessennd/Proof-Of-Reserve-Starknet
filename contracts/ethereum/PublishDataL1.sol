@@ -62,19 +62,14 @@ contract PublishDataL1 {
     }
 
     /**
-     *@param asset_symbol symbol of asset
-     *@param asset_name name of the asset
-     *@param _account address that owns the asset
-     *@param public_key address public_key , this only works for the poc,
-     *dev can adapt, remove by generating new signature with own address to test the contract
-     *@param account_balance amount of asset address owns
+     *@param asset address
+     *@param reserves the total of collateralized assets
+     *@param publicKey address public_key , this only works for the poc,
      */
     function publishData(
-        uint256 asset_symbol,
-        uint256 asset_name,
-        address _account,
-        uint256 account_balance,
-        uint256 public_key,
+        address asset,
+        uint256 reserves,
+        uint256 publicKey,
         bytes32 r,
         bytes32 s,
         uint8 v
@@ -83,23 +78,17 @@ contract PublishDataL1 {
             revert IsNotPublisher();
         }
         uint256[] memory payload = new uint256[](11);
-        uint256 sym = asset_symbol;
-        uint256 asset = asset_name;
-        uint256 address_account = uint256(uint160(_account));
         uint256 _r = uint256(r);
         uint256 _s = uint256(s);
         // send payload
-        payload[0] = sym;
-        payload[1] = asset;
-        payload[2] = address_account;
-        payload[3] = account_balance;
-        payload[4] = block.timestamp;
-        (payload[5], payload[6]) = toSplitUint(_r);
-        (payload[7], payload[8]) = toSplitUint(_s);
+        payload[0] = uint256(uint160(asset));
+        payload[1] = reserves;
+        (payload[2], payload[3]) = toSplitUint(_r);
+        (payload[4], payload[5]) = toSplitUint(_s);
         // v
-        payload[9] = v;
+        payload[6] = v;
         // payload[10] = uint256(uint160(address(address(this))));
-        payload[10] = public_key;
+        payload[7] = publicKey;
         // store the data for the next round
         data[msg.sender] = DataInfo(msg.sender, payload);
     }
