@@ -39,16 +39,14 @@ func word_reverse_endian_64{bitwise_ptr: BitwiseBuiltin*}(word: felt) -> (res: f
 }
 
 func verify_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
-    asset_sym_little: felt,
-    asset_name_little: felt,
-    address_owner_little: felt,
-    balance_little: felt,
+    asset: felt,
+    reserve: felt,
     r_low: felt,
     r_high: felt,
     s_low: felt,
     s_high: felt,
     v: felt,
-    eth_address: felt,
+    eth_address: felt
 ) {
     alloc_locals;
     // keccak_ptr needs to be initialized to use the keccak functions
@@ -69,7 +67,8 @@ func verify_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     assert input[4] = 0;  // 40
     assert input[5] = 0;  // 48
     assert input[6] = 0;  // 56
-    assert input[7] = asset_sym_little;  // 64
+    // assert input[7] = asset_sym_little;  // 64
+    assert input[7] = asset; //64
     assert input[8] = 0;  // 72
     assert input[9] = 0;  // 80
     assert input[10] = 0;  // 88
@@ -77,7 +76,7 @@ func verify_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     assert input[12] = 0;  // 104
     assert input[13] = 0;  // 112
     assert input[14] = 0;  // 120
-    assert input[15] = asset_name_little;  // 128
+    assert input[15] = reserve; // 128
     assert input[16] = 0;  // 136
     assert input[17] = 0;  // 144
     assert input[18] = 0;  // 152
@@ -89,8 +88,8 @@ func verify_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     assert input[24] = 0;  // 200
     assert input[25] = 0;  // 208
     assert input[26] = 0;  // 216
-    assert input[27] = address_owner_little;  // 224
-    assert input[28] = balance_little;  // 232
+    assert input[27] = 0;
+    assert input[28] = 0;
     assert input[29] = 0;  // 240
     assert input[30] = 0;  // 248
     assert input[31] = 0;  // 256
