@@ -7,7 +7,7 @@
 With the massive adoption of crypto and activity generally related to the financial market (trading, lending, swapping, borrowing) users are eager to know if the assets they have on the platforms are not just numbers without values. Proof of Reserve comes with the ambition to allow transparency since point-in-time attestation can be manipulated and cash flow analysis. PoR allows users to conduct audit on digital assets reserves while custodians (exchange, DeFi protocol) gain the trust of users. Another advantage worth mentioning is that PoR is also an appealing prospect for regulators as this self-regulating measure is in line with their overarching vision for the industry.
 
 
- # How PoR works?
+ # How Proof of reserve works?
  
 A Merkle root is obtained after the data has been processed via the Merkle tree by the third-party auditor during the Proof of Reserves process. The Merkle root is used to create a cryptographic fingerprint that represents the combination of the balances. In terms of cryptography, the tree's root acts as a "commitment scheme," i.e., a commitment that discloses the leaf nodes to be a part of the initial commitment. The auditors utilize this during Proof of Reserves (PoR) to confirm the balances. Several data samples are compared to the Merkle root. Auditors can detect any tampering with the data since even a little modification to the data impacts the Merkle root.
 
@@ -73,7 +73,7 @@ while Chainlink seems to offer a more decentralized solution, it is not present 
 
 **Clone this repo**
 
-```git clone https://github.com/joshualyguessennd/PoR```
+```git clone https://github.com/joshualyguessennd/ProofReserve-Starknet```
 
 # Environnment 
 
@@ -87,6 +87,7 @@ nvm use 16
 
 **Install**
 ```
+cd ProofReserve-Starknet
 python -m venv .venv
 source .venv/bin/activate
 pip install cairo-lang
