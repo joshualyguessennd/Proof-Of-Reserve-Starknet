@@ -40,7 +40,8 @@ To call the aggreagtor Dapp contracts need to call the main two functions:
 Oracles that keep track of assets supplies on Starknet
 
 **Ethereum<>Starknet Bridges Oracles** 
-![por_oracle](https://user-images.githubusercontent.com/37840702/199755200-c35858f2-9a48-4591-a759-6b8a866b1bcd.png)
+
+![dai oracle](https://user-images.githubusercontent.com/37840702/200176615-6d1f5b88-84b8-49bf-8358-08167df470c7.png)
 
 The Ethereum<>Starknet Oracles are responsible for the feeds on the balance of collateralized assets held on Starknet bridges. A storage proof is provided to the aggregator, the storage value for the balance of each of the underying asset is then computed and the total reserves/collateral value is sent the Starknet Aggregator. 
 
@@ -61,10 +62,13 @@ while Chainlink seems to offer a more decentralized solution, it is not present 
 - How decentralized are the oracles solution present on starknet ?
 - Where will we select the data to feed the oracle ?
 
+
 # Roadmap
 
 - [ ] Add governance contracts
 - [ ] Build oracles
+- [ ] Integration with Chainlink PoR 
+
 
 
 
