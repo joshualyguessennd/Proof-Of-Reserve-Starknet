@@ -89,6 +89,9 @@ func post_data{
     v: felt,
     public_key: felt
 ) {
+
+   //TODO: accepts messages comming from l1 aggregator only!!
+
     alloc_locals;
     let proposed_public_key = public_key;
     let (state) = authorized_publisher.read(public_key=proposed_public_key);
