@@ -10,7 +10,6 @@ from starkware.cairo.common.uint256 import Uint256, uint256_check, uint256_le
 from openzeppelin.token.erc20.IERC20 import IERC20
 
 struct Round {
-    publisher: felt,
     reserves: Uint256,
 }
 
@@ -26,9 +25,6 @@ func reserves_rounds(asset: felt, id: Uint256) -> (data: Round ) {
 func supplies_rounds(asset: felt, id: felt) -> (data: Round ) {
 }
 
-@storage_var
-func authorized_publisher(public_key: felt) -> (state: felt) {
-}
 
 // @storage_var
 // func latest_round() -> (res: Uint256) {
@@ -39,8 +35,6 @@ func authorized_publisher(public_key: felt) -> (state: felt) {
 @storage_var
 func l1_aggregator() -> (res: felt) {
 }
-
-
 
 
 func only_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
@@ -65,9 +59,8 @@ func only_l1_aggregator{
 @constructor
 func constructor{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}(admin: felt, publisher: felt) {
+}(admin: felt) {
     contract_admin.write(admin);
-    authorized_publisher.write(publisher, TRUE);
     return ();
 }
 
@@ -81,27 +74,12 @@ func get_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 
 
-@view
-func is_publisher{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(address: felt) -> (res: felt){
-    let (res) = authorized_publisher.read(address);
-    return(res=res);
-}
-
 @external
 func set_l1_aggregator{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     _l1_aggregator: felt
 ) {
     only_admin();
     l1_aggregator.write(_l1_aggregator);
-    return ();
-}
-
-@external
-func add_publisher{
-    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}(new_publisher: felt) {
-    only_admin();
-    authorized_publisher.write(new_publisher, TRUE);
     return ();
 }
 
@@ -116,7 +94,6 @@ func post_data{
     reserves_high: felt,
     block_number_low: felt,
     block_number_high: felt,
-    publisher: felt,
 ) {
 
     alloc_locals;
@@ -129,7 +106,7 @@ func post_data{
     with_attr error_message("High or low overflows 128 bit bound {block_number}") {
         uint256_check(block_number);
     }
-    let round = Round(publisher, reserves);
+    let round = Round(reserves);
     reserves_rounds.write(asset, block_number, round);
     // latest_round.write(block_number);
     return (); 
@@ -143,11 +120,10 @@ func publish_l2_supply{
 ){
     alloc_locals;
     let (block_number) = get_block_number();
-    let (sender) = get_caller_address();
     // get the total supply presents on l2
     //TODO totalsupply should be <= to the lastest round from l1 data post
     let supply: Uint256 = IERC20.totalSupply(contract_address=asset);
-    let round = Round(sender, supply);
+    let round = Round(supply);
     // let _last_round = latest_round.read();
     // let _round: Round = reserves_rounds.read(asset, _last_round);
     // let _reserves: Uint256 = _round.reserves;

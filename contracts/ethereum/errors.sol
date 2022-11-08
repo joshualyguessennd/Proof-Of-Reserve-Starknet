@@ -5,3 +5,4 @@ error NotOwner();
 error NotKeeper();
 error NotChainlinkRegistry();
 error AlreadyPublished();
+error AssetNotRegistered();
