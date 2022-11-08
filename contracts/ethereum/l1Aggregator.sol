@@ -41,8 +41,8 @@ contract L1Aggregator {
     function sendData(address asset, address bridge) public {
         require(bridges[asset] != address(0), "no bridge found for the asset");
         // asset with zero address corresponds to wrapped ether on Starknet
-        bool is_publised = assetPublishedForPeriod[asset][block.number];
-        if (is_publised == true) revert AlreadyPublished();
+        bool isPublised = assetPublishedForPeriod[asset][block.number];
+        if (isPublised == true) revert AlreadyPublished();
         
         uint256 availableCollateral = asset == address(0)
             ? bridge.balance
