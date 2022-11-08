@@ -13,6 +13,7 @@ contract L1Aggregator {
     //TODO: an asset can be present on multiple Starknet bridges,
     //so approving all bridges where the token is collateralized should be considered in the future
     mapping(address => address) public bridges;
+    mapping(address => mapping(uint => bool)) public assetPublishedForPeriod;
 
     // l1 handler function selector goes here ....
     uint256 public PUBLISH_DATA_SELECTOR = 0x10999;
@@ -20,6 +21,7 @@ contract L1Aggregator {
     event PostedData(
         address indexed asset,
         address indexed bridge,
+        address sender,
         uint256 totalCollateral,
         uint256 blockNumber
     );
@@ -39,17 +41,22 @@ contract L1Aggregator {
     function sendData(address asset, address bridge) public {
         require(bridges[asset] != address(0), "no bridge found for the asset");
         // asset with zero address corresponds to wrapped ether on Starknet
+        bool is_publised = assetPublishedForPeriod[asset][block.number];
+        if (is_publised == true) revert AlreadyPublished();
+        
         uint256 availableCollateral = asset == address(0)
             ? bridge.balance
             : IERC20(asset).balanceOf(bridge);
 
-        uint256[] memory payload = new uint256[](5);
+        uint256[] memory payload = new uint256[](6);
 
         payload[0] = uint256(uint160(asset));
 
         (payload[1], payload[2]) = toSplitUint(availableCollateral);
 
         (payload[3], payload[4]) = toSplitUint(block.number);
+        
+        payload[5] = uint256(uint160(msg.sender));
 
         _messagingContract.sendMessageToL2(
             l2Aggregator,
@@ -57,7 +64,9 @@ contract L1Aggregator {
             payload
         );
 
-        emit PostedData(asset, bridge, availableCollateral, block.number);
+        assetPublishedForPeriod[asset][block.number] = true;
+
+        emit PostedData(asset, bridge, msg.sender, availableCollateral, block.number);
     }
 
     /**

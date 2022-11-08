@@ -1,18 +1,17 @@
 %lang starknet
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin, HashBuiltin, SignatureBuiltin
-from starkware.cairo.common.pow import pow
-from starkware.starknet.common.syscalls import get_caller_address, get_block_timestamp
+from starkware.starknet.common.syscalls import get_caller_address, get_block_timestamp, get_block_number
 from starkware.cairo.common.math import assert_not_equal
 from starkware.cairo.common.bool import TRUE, FALSE
 from starkware.cairo.common.hash import hash2
-from starknet.signature_verification import verify_signature, word_reverse_endian_64
 from starkware.cairo.common.math_cmp import is_le_felt
+from starkware.cairo.common.uint256 import Uint256, uint256_check
+from openzeppelin.token.erc20.IERC20 import IERC20
 
 struct Round {
     publisher: felt,
-    reserves: felt,
-    timestamp: felt,
+    reserves: Uint256,
 }
 
 @storage_var
@@ -20,7 +19,7 @@ func contract_admin() -> (res: felt) {
 }
 
 @storage_var
-func reserves_rounds(asset: felt, id: felt) -> (data: Round ) {
+func reserves_rounds(asset: felt, id: Uint256) -> (data: Round ) {
 }
 
 @storage_var
@@ -31,12 +30,28 @@ func supplies_rounds(asset: felt, id: felt) -> (data: Round ) {
 func authorized_publisher(public_key: felt) -> (state: felt) {
 }
 
+@storage_var
+func l1_aggregator() -> (res: felt) {
+}
+
+
+
 
 func only_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
     let (caller) = get_caller_address();
     let (admin) = contract_admin.read();
     with_attr error_message("Admin: Called by a non-admin contract") {
         assert caller = admin;
+    }
+    return ();
+}
+
+func only_l1_aggregator{
+    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
+} (sender: felt) {
+    let (aggregator) = l1_aggregator.read();
+    with_attr error_message("Aggregator: Called by a aggregator contract") {
+        assert sender = aggregator;
     }
     return ();
 }
@@ -50,6 +65,7 @@ func constructor{
     return ();
 }
 
+
 @view
 func get_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 )->(admin: felt) {
@@ -58,10 +74,20 @@ func get_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 }
 
 
+
 @view
 func is_publisher{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(address: felt) -> (res: felt){
     let (res) = authorized_publisher.read(address);
     return(res=res);
+}
+
+@external
+func set_l1_aggregator{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    _l1_aggregator: felt
+) {
+    only_admin();
+    l1_aggregator.write(_l1_aggregator);
+    return ();
 }
 
 @external
@@ -73,48 +99,32 @@ func add_publisher{
     return ();
 }
 
-///l1 message, to do generate the root and store directly from ethereum side
+
 @l1_handler
 func post_data{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
 }(
     from_address: felt, 
     asset:felt,
-    reserves:felt,
-    timestamp: felt,
-    r_low: felt,
-    r_high: felt,
-    s_low: felt,
-    s_high: felt,
-    v: felt,
-    public_key: felt
+    reserves_low: felt,
+    reserves_high: felt,
+    block_number_low: felt,
+    block_number_high: felt,
+    publisher: felt,
 ) {
 
-   //TODO: accepts messages comming from l1 aggregator only!!
-
     alloc_locals;
-    let proposed_public_key = public_key;
-    let (state) = authorized_publisher.read(public_key=proposed_public_key);
-    // // verify if the post has the right to post data
-    with_attr error_message("Address has no right to sign the message") {
-        assert state = TRUE;
+    only_l1_aggregator(from_address);
+    let reserves = Uint256(reserves_low, reserves_high);
+    with_attr error_message("High or low overflows 128 bit bound {reserves}") {
+        uint256_check(reserves);
     }
-    // // verify the signature of the sources
-    with_attr error_message("Signature verification failed") {
-        verify_signature(
-           asset,
-            reserves,
-            r_low,
-            r_high,
-            s_low,
-            s_high,
-            v,
-            public_key,
-        );
+    let block_number = Uint256(block_number_low, block_number_high);
+    with_attr error_message("High or low overflows 128 bit bound {block_number}") {
+        uint256_check(block_number);
     }
-    let round = Round(public_key ,reserves, timestamp);
- 
-    reserves_rounds.write(asset, 1, round);
+    let round = Round(publisher, reserves);
+    reserves_rounds.write(asset, block_number, round);
     return (); 
 }
 
@@ -122,40 +132,14 @@ func post_data{
 func publish_l2_supply{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
 }(  
-    asset:felt,
-    supply: felt,
-    timestamp: felt,
-    r_low: felt,
-    r_high: felt,
-    s_low: felt,
-    s_high: felt,
-    v: felt,
-    public_key: felt
+    asset:felt
 ){
     alloc_locals;
-    let proposed_public_key = public_key;
-    let (state) = authorized_publisher.read(public_key=proposed_public_key);
-    // verify if the post has the right to post data
-    with_attr error_message("Address has no right to sign the message") {
-        assert state = TRUE;
-    }
-    // verify the signature of the sources
-    with_attr error_message("Signature verification failed") {
-        verify_signature(
-            asset,
-            supply,
-            r_low,
-            r_high,
-            s_low,
-            s_high,
-            v,
-            public_key,
-        );
-    }
-   
-   let round = Round(public_key ,supply, timestamp);
-    supplies_rounds.write(asset, 1, round);
-    
+    let (block_number) = get_block_number();
+    let (sender) = get_caller_address();
+    let supply: Uint256 = IERC20.totalSupply(contract_address=asset);
+    let round = Round(sender, supply);
+    supplies_rounds.write(asset, block_number, round);
     return ();
 }
 
@@ -166,10 +150,11 @@ func get_latest_reserves{
         pedersen_ptr : HashBuiltin*, 
         range_check_ptr
 }(
-    asset: felt
+    asset: felt,
+    block_number: Uint256
 ) -> (data: Round){
    
-    return reserves_rounds.read(asset, 1);
+    return reserves_rounds.read(asset, block_number);
 }
 
 // gets the latest asset supply on l2
@@ -182,7 +167,7 @@ func get_latest_supply{
     asset: felt
 ) -> (data: Round){
 
- return supplies_rounds.read(asset, 1);
+    return supplies_rounds.read(asset, 1);
 
 }
 
