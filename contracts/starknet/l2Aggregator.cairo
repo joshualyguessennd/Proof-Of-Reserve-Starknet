@@ -7,30 +7,33 @@ from starkware.cairo.common.bool import TRUE, FALSE
 from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.math_cmp import is_le_felt
 from starkware.cairo.common.uint256 import Uint256, uint256_check, uint256_le
-from openzeppelin.token.erc20.IERC20 import IERC20
+
+@contract_interface
+namespace IERC20 {
+    func totalSupply()->(supply: felt) {
+    }
+}
 
 struct Round {
-    reserves: Uint256,
+    value: Uint256,
+    block_number: Uint256,
 }
 
 @storage_var
-func contract_admin() -> (res: felt) {
+func admin() -> (res: felt) {
 }
 
 @storage_var
-func reserves_rounds(asset: felt, id: Uint256) -> (data: Round ) {
+func latest_reserves(asset: felt) -> (data: Round ) {
 }
 
 @storage_var
-func supplies_rounds(asset: felt, id: felt) -> (data: Round ) {
+func latest_supply(asset: felt) -> (data: Round ) {
 }
 
-
-// @storage_var
-// func latest_round() -> (res: Uint256) {
-
-// }
-
+@storage_var
+func token_pairs(l1_asset: felt) -> (l2_asset: felt ) {
+}
 
 @storage_var
 func l1_aggregator() -> (res: felt) {
@@ -39,9 +42,9 @@ func l1_aggregator() -> (res: felt) {
 
 func only_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
     let (caller) = get_caller_address();
-    let (admin) = contract_admin.read();
+    let (_admin) = admin.read();
     with_attr error_message("Admin: Called by a non-admin contract") {
-        assert caller = admin;
+        assert caller = _admin;
     }
     return ();
 }
@@ -56,20 +59,49 @@ func only_l1_aggregator{
     return ();
 }
 
-@constructor
-func constructor{
-    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
-}(admin: felt) {
-    contract_admin.write(admin);
-    return ();
-}
-
 
 @view
 func get_admin{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 )->(admin: felt) {
-    let (admin) = contract_admin.read();
-    return(admin=admin);
+    let (_admin) = admin.read();
+    return(admin=_admin);
+}
+
+// gets the latest reserves round published from l1
+@view
+func get_latest_reserves{
+        syscall_ptr : felt*, 
+        pedersen_ptr : HashBuiltin*, 
+        range_check_ptr
+}(
+    asset: felt,
+    block_number: Uint256
+) -> (data: Round){
+   
+    return latest_reserves.read(asset);
+}
+
+// gets the latest asset supply on l2
+@view
+func get_latest_supply{
+        syscall_ptr : felt*, 
+        pedersen_ptr : HashBuiltin*, 
+        range_check_ptr
+}(
+    asset: felt
+) -> (data: Round){
+
+    return latest_supply.read(asset);
+
+}
+
+
+@constructor
+func constructor{
+    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
+}(_admin: felt) {
+    admin.write(_admin);
+    return ();
 }
 
 
@@ -80,6 +112,15 @@ func set_l1_aggregator{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
 ) {
     only_admin();
     l1_aggregator.write(_l1_aggregator);
+    return ();
+}
+
+@external
+func set_token_pairs{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    l1_asset: felt, l2_asset: felt
+) {
+    only_admin();
+    token_pairs.write(l1_asset, l2_asset);
     return ();
 }
 
@@ -106,9 +147,9 @@ func post_data{
     with_attr error_message("High or low overflows 128 bit bound {block_number}") {
         uint256_check(block_number);
     }
-    let round = Round(reserves);
-    reserves_rounds.write(asset, block_number, round);
-    // latest_round.write(block_number);
+    let (l2_asset)=token_pairs.read(asset);//gets the l1 assets counterpart
+    let round = Round(reserves, block_number);
+    latest_reserves.write(l2_asset,round);
     return (); 
 }
 
@@ -119,48 +160,13 @@ func publish_l2_supply{
     asset:felt
 ){
     alloc_locals;
-    let (block_number) = get_block_number();
-    // get the total supply presents on l2
-    //TODO totalsupply should be <= to the lastest round from l1 data post
+    let block_number : Uint256 = get_block_number();
     let supply: Uint256 = IERC20.totalSupply(contract_address=asset);
-    let round = Round(supply);
-    // let _last_round = latest_round.read();
-    // let _round: Round = reserves_rounds.read(asset, _last_round);
-    // let _reserves: Uint256 = _round.reserves;
-    // with_attr error_message("Invalid supply detected") {
-    //     uint256_le(supply, _reserves);
-    // }
-    supplies_rounds.write(asset, block_number, round);
+    let round = Round(supply, block_number);
+    latest_supply.write(asset, round);
     return ();
 }
 
-// gets the latest reserves round published from l1
-@view
-func get_latest_reserves{
-        syscall_ptr : felt*, 
-        pedersen_ptr : HashBuiltin*, 
-        range_check_ptr
-}(
-    asset: felt,
-    block_number: Uint256
-) -> (data: Round){
-   
-    return reserves_rounds.read(asset, block_number);
-}
-
-// gets the latest asset supply on l2
-@view
-func get_latest_supply{
-        syscall_ptr : felt*, 
-        pedersen_ptr : HashBuiltin*, 
-        range_check_ptr
-}(
-    asset: felt
-) -> (data: Round){
-
-    return supplies_rounds.read(asset, 1);
-
-}
 
 
 

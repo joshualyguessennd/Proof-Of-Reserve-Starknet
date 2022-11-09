@@ -1,4 +1,4 @@
-import { expect } from "chai";
+/* import { expect } from "chai";
 import hre, { ethers, starknet } from "hardhat";
 import { StarknetContract, HardhatUserConfig } from "hardhat/types";
 import config from "../hardhat.config";
@@ -151,4 +151,4 @@ function expectAddressEquality(actual: string, expected: string) {
 
 function adaptAddress(address: string) {
   return "0x" + BigInt(address).toString(16);
-}
+} */

@@ -63,6 +63,7 @@ const config: HardhatUserConfig = {
     tests: "./test",
     starknetSources: "./contracts",
     starknetArtifacts: "./starknet-artifacts",
+    cairoPaths: ["/usr/local/lib/python3.9/site-package"],
   },
 };
 
