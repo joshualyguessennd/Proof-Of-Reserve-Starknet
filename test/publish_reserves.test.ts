@@ -5,7 +5,6 @@ import config from "../hardhat.config";
 import { Contract, ContractFactory } from "ethers";
 import { Account } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { getSelectorFromName } from "starknet/dist/utils/hash";
 import { uintFromParts } from "./utils";
 
 describe("test contracts interaction", function () {
@@ -14,7 +13,6 @@ describe("test contracts interaction", function () {
   let l1AggregatorFactory: ContractFactory;
   let l1TokenFactory: ContractFactory;
   let l2user: Account;
-  let selector: string;
   let l2Token: StarknetContract;
   let l1Token: Contract;
   let mockStarknetMessagingAddress: string;
