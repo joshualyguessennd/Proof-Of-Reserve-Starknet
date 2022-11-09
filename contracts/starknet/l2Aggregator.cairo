@@ -53,7 +53,7 @@ func only_l1_aggregator{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 } (sender: felt) {
     let (aggregator) = l1_aggregator.read();
-    with_attr error_message("Aggregator: Called by a aggregator contract") {
+    with_attr error_message("Aggregator: Called by a non-aggregator contract") {
         assert sender = aggregator;
     }
     return ();
