@@ -74,8 +74,7 @@ func get_latest_reserves{
         pedersen_ptr : HashBuiltin*, 
         range_check_ptr
 }(
-    asset: felt,
-    block_number: Uint256
+    asset: felt
 ) -> (data: Round){
    
     return latest_reserves.read(asset);

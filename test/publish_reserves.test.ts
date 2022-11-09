@@ -85,10 +85,14 @@ describe("test contracts interaction", function () {
       .approveStarknetBridge(l1Token.address, l1DaiBridgeMock);
   });
 
-  it("approve token pairs on l2 aggregator", async () => {
+  it("approve token pairs on l2 aggregator & set l1 aggregator", async () => {
     await l2user.invoke(l2Aggregator, "set_token_pairs", {
       l1_asset: BigInt(l1Token.address),
       l2_asset: BigInt(l2Token.address),
+    });
+
+    await l2user.invoke(l2Aggregator, "set_l1_aggregator", {
+      _l1_aggregator: BigInt(l1Aggregator.address),
     });
   });
 
@@ -120,13 +124,13 @@ describe("test contracts interaction", function () {
       flushL1Messages[0].args.payload[4]
     );
 
-    let round = await l2Aggregator.call("latest_reserves", {
+    let { data } = await l2Aggregator.call("get_latest_reserves", {
       asset: BigInt(l2Token.address),
     });
 
-    expect(round).to.be.eq({
+    expect(data).to.deep.eq({
       value: { low: collateral, high: 0n },
-      block_number: { low: blockNumber, hign: 0n },
+      block_number: { low: blockNumber, high: 0n },
     });
   });
 });
