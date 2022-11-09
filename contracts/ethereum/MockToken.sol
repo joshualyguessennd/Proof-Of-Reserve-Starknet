@@ -4,7 +4,7 @@ pragma solidity >=0.8.15;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract MockToken is ERC20("MockToken", "MT") {
-    constructor() {
-        _mint(msg.sender, 100_000e18);
+    constructor(address recipient) {
+        _mint(recipient, 100_000e18);
     }
 }

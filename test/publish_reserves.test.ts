@@ -12,12 +12,17 @@ describe("test contracts interaction", function () {
   let l1Aggregator: Contract;
   let l2Aggregator: StarknetContract;
   let l1AggregatorFactory: ContractFactory;
+  let l1TokenFactory: ContractFactory;
   let l2user: Account;
   let selector: string;
+  let l2Token: StarknetContract;
+  let l1Token: Contract;
   let mockStarknetMessagingAddress: string;
   let admin: SignerWithAddress;
   let l1_user: SignerWithAddress;
-
+  const l2DaiBridgeMock =
+    "0x079f0c4439d5b9d37c62c343625cdf7497a706635740d9ce2dcd8a6255c0b606";
+  const l1DaiBridgeMock = "0xDAFEA492D9c6733ae3d56b7Ed1ADB60692c98Bc5";
   before(async () => {
     [admin, l1_user] = await hre.ethers.getSigners();
     // const starkNetFake = await smock.fake(interface);
@@ -31,22 +36,35 @@ describe("test contracts interaction", function () {
       await starknet.devnet.loadL1MessagingContract(networkUrl)
     ).address;
 
-    //TODO: deploy l1 & l2 tokens & bridges mocks for testing
+    const l2TokenFactory = await starknet.getContractFactory(
+      "contracts/starknet/mocks/mock_token"
+    );
+
+    l2Token = await l2TokenFactory.deploy({
+      name: 1n,
+      symbol: 1n,
+      decimals: 1n,
+      initial_supply: { low: BigInt(100000 * 10 ** 18), high: 0n },
+      recipient: BigInt(l2DaiBridgeMock),
+    });
 
     const l2AggregatorFactory = await starknet.getContractFactory(
       "contracts/starknet/l2Aggregator"
     );
 
     l2Aggregator = await l2AggregatorFactory.deploy({
-      admin: l2user.starknetContract.address,
+      _admin: BigInt(l2user.starknetContract.address),
     });
 
     l1AggregatorFactory = await ethers.getContractFactory(
-      "l1Aggregator",
+      "L1Aggregator",
       admin
     );
-    selector = getSelectorFromName("post_data");
-    console.log("selector:", selector);
+
+    l1TokenFactory = await ethers.getContractFactory("MockToken", admin);
+    l1Token = await l1TokenFactory.deploy(l1DaiBridgeMock);
+
+    //selector = getSelectorFromName("post_data");
 
     l1Aggregator = await l1AggregatorFactory.deploy(
       mockStarknetMessagingAddress,
@@ -62,23 +80,27 @@ describe("test contracts interaction", function () {
   });
 
   it("add Starknet bridges", async () => {
-    await l1Aggregator.connect(l1_user).approveStarknetBridge(0, 0);
+    await l1Aggregator
+      .connect(admin)
+      .approveStarknetBridge(l1Token.address, l1DaiBridgeMock);
   });
 
   it("approve token pairs on l2 aggregator", async () => {
-    //set_token_pairs(..,..)
+    await l2user.invoke(l2Aggregator, "set_token_pairs", {
+      l1_asset: BigInt(l1Token.address),
+      l2_asset: BigInt(l2Token.address),
+    });
   });
 
   it("check publish data", async () => {
-    // expect it to fail  with is Not Signer
-    await l1Aggregator.connect(l1_user).sendData("l1Token.address");
+    await l1Aggregator.connect(l1_user).sendData(l1Token.address);
 
     // flush message to l2
     const flushL1Response = await starknet.devnet.flush();
     const flushL1Messages = flushL1Response.consumed_messages.from_l1;
     // check assertion
     expect(flushL1Response.consumed_messages.from_l2).to.be.empty;
-    expect(flushL1Messages).to.have.a.lengthOf(2);
+    expect(flushL1Messages).to.have.a.lengthOf(1);
 
     expectAddressEquality(
       flushL1Messages[0].args.from_address,
@@ -98,11 +120,13 @@ describe("test contracts interaction", function () {
       flushL1Messages[0].args.payload[4]
     );
 
-    let result = await l2Aggregator.call("latest_reserves", { asset: "..." });
+    let round = await l2Aggregator.call("latest_reserves", {
+      asset: BigInt(l2Token.address),
+    });
 
-    expect(result).to.be.eq({
+    expect(round).to.be.eq({
       value: { low: collateral, high: 0n },
-      block_number: blockNumber,
+      block_number: { low: blockNumber, hign: 0n },
     });
   });
 });

@@ -16,7 +16,8 @@ contract L1Aggregator {
     mapping(address => mapping(uint256 => bool)) public assetPublishedForPeriod;
 
     // l1 handler function selector goes here ....
-    uint256 public PUBLISH_DATA_SELECTOR = 0x10999;
+    uint256 public PUBLISH_DATA_SELECTOR =
+        0x3333d64c63b62feb9cba359075e76240453d6463f6f631643123416d42b4291;
 
     event PostedData(
         address indexed asset,
