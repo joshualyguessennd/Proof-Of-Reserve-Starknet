@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@shardlabs/starknet-hardhat-plugin";
 import "@nomicfoundation/hardhat-toolbox";
+import "hardhat-gas-reporter"
 
 const { HOSTNAME_L1, HOSTNAME_L2 } = process.env;
 
@@ -54,6 +55,11 @@ const config: HardhatUserConfig = {
         accountPath: "~/.starknet_accounts",
       },
     },
+  },
+
+  gasReporter: {
+    enabled: true,
+    currency: "ETH"
   },
 
   paths: {
