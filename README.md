@@ -71,7 +71,7 @@ let (supply,_)=IStarknetAggregator.get_latest_supply(AGGREGATOR_ADDRESS, ASSET_A
 Bots that would keep triggering the reporting of assets supply & resrves to the l2 & l1 aggregator.
 
 
-## Second system architecture (not permissionless)
+## Second system architecture (permissioned)
 
 ![por](https://user-images.githubusercontent.com/37840702/199752841-beccc187-c90b-49b4-821e-725db3a1bb33.png)
 
