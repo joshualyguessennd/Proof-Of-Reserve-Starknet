@@ -10,7 +10,7 @@ contract L1Aggregator {
     address public owner;
     uint256 public l2Aggregator;
     // we assume for now a 1:1 relation between an asset and its bridge
-    //TODO: an asset can be present on multiple Starknet bridges,
+    //An asset can be present on multiple Starknet bridges,
     //so approving all bridges where the token is collateralized should be considered in the future
     mapping(address => address[]) public bridges;
     mapping(address => mapping(uint256 => bool)) public assetPublishedForPeriod;
@@ -38,15 +38,15 @@ contract L1Aggregator {
      *@param asset address
      */
     function sendData(address asset) public {
-        // require(bridges[asset] != address(0), "no bridge found for the asset");
         if (bridges[asset].length == 0) revert AssetNotRegistered();
-        // asset with zero address corresponds to wrapped ether on Starknet
+
         if (assetPublishedForPeriod[asset][block.number] == true)
             revert AlreadyPublished();
 
         uint256 availableCollateral;
         address[] memory _brigdes = bridges[asset];
 
+        //@dev asset with zero address corresponds to wrapped ether on Starknet
         // loop through all bridge and get the total amount of asset
         for (uint256 i; i < _brigdes.length; i++) {
             unchecked {
