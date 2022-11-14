@@ -722,12 +722,12 @@
 
 "@nomicfoundation/solidity-analyzer-darwin-arm64@0.0.3":
   version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@nomicfoundation/solidity-analyzer-darwin-arm64/-/solidity-analyzer-darwin-arm64-0.0.3.tgz#1d49e4ac028831a3011a9f3dca60bd1963185342"
+  resolved "https://registry.npmjs.org/@nomicfoundation/solidity-analyzer-darwin-arm64/-/solidity-analyzer-darwin-arm64-0.0.3.tgz"
   integrity sha512-W+bIiNiZmiy+MTYFZn3nwjyPUO6wfWJ0lnXx2zZrM8xExKObMrhCh50yy8pQING24mHfpPFCn89wEB/iG7vZDw==
 
 "@nomicfoundation/solidity-analyzer-darwin-x64@0.0.3":
   version "0.0.3"
-  resolved "https://registry.npmjs.org/@nomicfoundation/solidity-analyzer-darwin-x64/-/solidity-analyzer-darwin-x64-0.0.3.tgz"
+  resolved "https://registry.yarnpkg.com/@nomicfoundation/solidity-analyzer-darwin-x64/-/solidity-analyzer-darwin-x64-0.0.3.tgz#c0fccecc5506ff5466225e41e65691abafef3dbe"
   integrity sha512-HuJd1K+2MgmFIYEpx46uzwEFjvzKAI765mmoMxy4K+Aqq1p+q7hHRlsFU2kx3NB8InwotkkIq3A5FLU1sI1WDw==
 
 "@nomicfoundation/solidity-analyzer-freebsd-x64@0.0.3":
@@ -857,7 +857,7 @@
 
 "@openzeppelin/contracts@^4.8.0":
   version "4.8.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.8.0.tgz#6854c37df205dd2c056bdfa1b853f5d732109109"
+  resolved "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-4.8.0.tgz"
   integrity sha512-AGuwhRRL+NaKx73WKRNzeCxOCOCxpaqF+kp8TJ89QzAipSwZy/NoflkWaL9bywXFRhIzXt8j38sfF7KBKCPWLw==
 
 "@resolver-engine/core@^0.3.3":
@@ -989,7 +989,7 @@
 
 "@shardlabs/starknet-hardhat-plugin@0.6.7":
   version "0.6.7"
-  resolved "https://registry.yarnpkg.com/@shardlabs/starknet-hardhat-plugin/-/starknet-hardhat-plugin-0.6.7.tgz#5e03843d30305718eabdc96a834344107066f718"
+  resolved "https://registry.npmjs.org/@shardlabs/starknet-hardhat-plugin/-/starknet-hardhat-plugin-0.6.7.tgz"
   integrity sha512-GqCKJ69ns5fXHlQj6XV4HD4HE0srBWjnA/dVMO23fs92jnwdMz176dQ6aJxO9ZzpO2lFGnLbjHCGtnMcH8krhQ==
   dependencies:
     "@nomiclabs/hardhat-docker" "^2.0.2"
