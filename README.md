@@ -8,17 +8,17 @@ With the massive adoption of crypto and activity generally related to the financ
 
 # ****Our Solution****
 
-We propose two solutions each with its own drawbacks and advantages.
+We propose two solutions to how we can provide a proof of reserves for the bridged assets on Starknet.  Each with its own drawbacks and advantages.
 
 ## First system architecture (permissionless)
 
 How it works:
 
-1- A user call ``sendData()`` on l1 aggregator providing the ``address`` of the asset to be proved.
+1- A user call ``sendData()`` on l1 aggregator providing the ``address`` of the asset's balance to be verified.
 
-2- The l1 aggregator gets the address of the bridge holding the provided assets, and fetches its balance. A payload with the block number, the returned balance is then sent to the Starknet messaging contract to be bridged over to Starknet.
+2- The l1 aggregator gets the address of the bridge holding the provided asset, and fetches its balance. A payload with the block number, the returned balance is then sent to the Starknet messaging contract to be bridged over to Starknet.
 
-3- The l2 aggregator receives the payload and caches the collateral & block number. 
+3- The l2 aggregator receives the payload and caches the received collateral & block number. 
 
 
 
@@ -27,7 +27,7 @@ How it works:
 
 ## System components
 
-The main components of the system can be broken down into the bridge oracles, aggregators (both on Ethereum & Starknet) & Starknet Oracles.
+The main components of the system can be broken down into the aggregators (both on Ethereum & Starknet) & the maintainers.
 
 
 **Mainnet Aggregator**
@@ -55,8 +55,8 @@ Example of usage:
 let (reserves,_)=IStarknetAggregator.get_latest_reserves(AGGREGATOR_ADDRESS, ASSET_ADDRESS);
 let (supply,_)=IStarknetAggregator.get_latest_supply(AGGREGATOR_ADDRESS, ASSET_ADDRESS);
 
- let (le) = uint256_le(supply, reserves);
-        if (le == TRUE) {
+ let (supply_le_reserves) = uint256_le(supply, reserves);
+        if (supply_le_reserves == TRUE) {
   //mint your tokens on starknet
  
         } else {
