@@ -59,7 +59,7 @@ const config: HardhatUserConfig = {
 
   gasReporter: {
     enabled: true,
-    currency: "ETH"
+    currency: "USD"
   },
 
   paths: {
