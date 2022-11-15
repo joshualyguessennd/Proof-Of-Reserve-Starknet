@@ -2,6 +2,9 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@shardlabs/starknet-hardhat-plugin";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-gas-reporter"
+import { token } from "./typechain-types/@openzeppelin/contracts";
+import * as dotenv from "dotenv";
+dotenv.config({ path: __dirname + '/.env' });
 
 const { HOSTNAME_L1, HOSTNAME_L2 } = process.env;
 
@@ -59,7 +62,9 @@ const config: HardhatUserConfig = {
 
   gasReporter: {
     enabled: true,
-    currency: "USD"
+    currency: 'USD',
+    gasPriceApi: process.env.ETHERSCAN_API,
+    coinmarketcap: process.env.COIN_API
   },
 
   paths: {
