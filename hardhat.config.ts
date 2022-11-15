@@ -3,11 +3,16 @@ import "@shardlabs/starknet-hardhat-plugin";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-gas-reporter"
 import { token } from "./typechain-types/@openzeppelin/contracts";
-import * as dotenv from "dotenv";
-dotenv.config({ path: __dirname + '/.env' });
+import { config as dotenvConfig } from "dotenv";
+import { resolve } from "path";
 
+dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-const { HOSTNAME_L1, HOSTNAME_L2 } = process.env;
+const { HOSTNAME_L1, HOSTNAME_L2, ETHERSCAN_API, COIN_API } = process.env;
+
+if (!ETHERSCAN_API || !COIN_API) {
+  throw new Error("Please set your private keys in your .env file");
+}
 
 const config: HardhatUserConfig = {
   networks: {
@@ -64,8 +69,8 @@ const config: HardhatUserConfig = {
   gasReporter: {
     enabled: true,
     currency: 'USD',
-    gasPriceApi: process.env.ETHERSCAN_API,
-    coinmarketcap: process.env.COIN_API
+    gasPriceApi: ETHERSCAN_API,
+    coinmarketcap: COIN_API
   },
 
   paths: {
