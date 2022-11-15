@@ -6,6 +6,7 @@ import { token } from "./typechain-types/@openzeppelin/contracts";
 import * as dotenv from "dotenv";
 dotenv.config({ path: __dirname + '/.env' });
 
+
 const { HOSTNAME_L1, HOSTNAME_L2 } = process.env;
 
 const config: HardhatUserConfig = {
