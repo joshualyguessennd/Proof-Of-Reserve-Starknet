@@ -85,7 +85,6 @@ The Ethereum<>Starknet oracles are responsible for the feeds on the balance of c
 
 # TO DO
 
-- [ ] Add governance contracts
 - [ ] Explore how to incentivize maintainers
 - [ ] Explore integration with Starknet oracles
 - [ ] Explore how to optimize external calls on l1 aggregator
